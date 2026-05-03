@@ -27,6 +27,7 @@ docker run --rm \
              apt-get install -y debhelper-compat golang-go && \
              go version && \
              cp -r pack/debian . && \
+             cp -r pack/templates . && \
              dpkg-buildpackage -b -us -uc 2>&1"
 
 # Move .deb files to dist/
