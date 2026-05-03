@@ -58,6 +58,10 @@ fi
 mkdir -p nsis-build
 cp "${WORKSPACE}/bin/asika-windows-amd64.exe" nsis-build/asika.exe 2>/dev/null || true
 cp "${WORKSPACE}/bin/asikad-windows-amd64.exe" nsis-build/asikad.exe 2>/dev/null || true
+cp "${WORKSPACE}/pack/LICENSE" nsis-build/LICENSE
+cp "${WORKSPACE}/pack/templates/nsis/asika.ico" nsis-build/
+cp "${WORKSPACE}/pack/templates/nsis/header.bmp" nsis-build/
+cp "${WORKSPACE}/pack/templates/nsis/welcome.bmp" nsis-build/
 
 # Copy NSIS script
 cp "${WORKSPACE}/pack/templates/nsis/install.nsi" nsis-build/
