@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    remove|deconfigure)
+        if [ -x /bin/systemctl ]; then
+            systemctl stop asikad >/dev/null 2>&1 || true
+            systemctl disable asikad >/dev/null 2>&1 || true
+        fi
+        ;;
+esac
+
+#DEBHELPER#

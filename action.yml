@@ -1,0 +1,113 @@
+name: "Pack - Asika Builder & Packager"
+description: "Build and package asika for multiple platforms"
+
+inputs:
+  package-type:
+    description: "build|deb|dmg|nsis|docker"
+    required: true
+  go-version:
+    description: "Go version (e.g., 1.25.0)"
+    required: true
+  binaries:
+    description: "Comma-separated binary names (e.g., asika,asikad)"
+    required: false
+    default: "asika,asikad"
+  tag-name:
+    description: "Release tag name"
+    required: true
+  github-token:
+    description: "GitHub token"
+    required: true
+  docker-registry:
+    description: "Docker registry"
+    required: false
+    default: "ghcr.io"
+  docker-image-name:
+    description: "Docker image name"
+    required: false
+    default: "asika"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout pack repository
+      if: ${{ inputs.package-type != 'build' }}
+      uses: actions/checkout@v4
+      with:
+        repository: AsikaProject/pack
+        path: pack
+        token: ${{ inputs.github-token }}
+
+    - name: Build binaries (cross-compile)
+      if: ${{ inputs.package-type == 'build' }}
+      shell: bash
+      run: |
+        PACK_DIR="${{ github.workspace }}/pack"
+        if [ ! -d "$PACK_DIR" ]; then
+          git clone https://github.com/AsikaProject/pack.git "$PACK_DIR"
+        fi
+        bash "$PACK_DIR/scripts/build-binaries.sh"
+      env:
+        GO_VERSION: ${{ inputs.go-version }}
+        BINARIES: ${{ inputs.binaries }}
+        TAG_NAME: ${{ inputs.tag-name }}
+
+    - name: Package DEB
+      if: ${{ inputs.package-type == 'deb' }}
+      shell: bash
+      run: |
+        PACK_DIR="${{ github.workspace }}/pack"
+        if [ ! -d "$PACK_DIR" ]; then
+          git clone https://github.com/AsikaProject/pack.git "$PACK_DIR"
+        fi
+        bash "$PACK_DIR/scripts/package-deb.sh"
+      env:
+        TAG_NAME: ${{ inputs.tag-name }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Package DMG
+      if: ${{ inputs.package-type == 'dmg' }}
+      shell: bash
+      run: |
+        PACK_DIR="${{ github.workspace }}/pack"
+        if [ ! -d "$PACK_DIR" ]; then
+          git clone https://github.com/AsikaProject/pack.git "$PACK_DIR"
+        fi
+        if [ "$(uname -s)" != "Darwin" ]; then
+          echo "::error::DMG packaging requires macOS runner"
+          exit 1
+        fi
+        bash "$PACK_DIR/scripts/package-dmg.sh"
+      env:
+        TAG_NAME: ${{ inputs.tag-name }}
+
+    - name: Package NSIS
+      if: ${{ inputs.package-type == 'nsis' }}
+      shell: bash
+      run: |
+        PACK_DIR="${{ github.workspace }}/pack"
+        if [ ! -d "$PACK_DIR" ]; then
+          git clone https://github.com/AsikaProject/pack.git "$PACK_DIR"
+        fi
+        if [ "$(uname -s)" != "Windows" ] && [ "$(uname -s)" != "MINGW"* ] && [ "$(uname -s)" != "MSYS"* ]; then
+          echo "::error::NSIS packaging requires Windows runner"
+          exit 1
+        fi
+        bash "$PACK_DIR/scripts/package-nsis.sh"
+      env:
+        TAG_NAME: ${{ inputs.tag-name }}
+
+    - name: Package Docker
+      if: ${{ inputs.package-type == 'docker' }}
+      shell: bash
+      run: |
+        PACK_DIR="${{ github.workspace }}/pack"
+        if [ ! -d "$PACK_DIR" ]; then
+          git clone https://github.com/AsikaProject/pack.git "$PACK_DIR"
+        fi
+        bash "$PACK_DIR/scripts/package-docker.sh"
+      env:
+        TAG_NAME: ${{ inputs.tag-name }}
+        DOCKER_REGISTRY: ${{ inputs.docker-registry }}
+        DOCKER_IMAGE_NAME: ${{ inputs.docker-image-name }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}

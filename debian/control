@@ -1,0 +1,25 @@
+Source: asika
+Section: devel
+Priority: optional
+Maintainer: Asika Project <maintainer@asika.project>
+Build-Depends: debhelper-compat (= 13), golang-go
+Standards-Version: 4.6.2
+Homepage: https://github.com/AsikaProject/asika
+Vcs-Git: https://github.com/AsikaProject/asika.git
+Vcs-Browser: https://github.com/AsikaProject/asika
+
+Package: asika
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cross-platform PR manager CLI
+ Asika is a cross-platform PR manager and merge queue tool.
+ .
+ This package provides the CLI tool for managing pull requests.
+
+Package: asikad
+Architecture: any
+Depends: asika (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Asika PR Manager Daemon
+ Asika is a cross-platform PR manager and merge queue tool.
+ .
+ This package provides the daemon for the web dashboard and API server.

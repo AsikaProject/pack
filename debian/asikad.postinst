@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        # Create asika user if not exists
+        if ! getent passwd asika > /dev/null 2>&1; then
+            adduser --system --group --no-create-home --home /var/lib/asika asika
+        fi
+        
+        # Create necessary directories
+        mkdir -p /var/lib/asika /var/log/asika
+        chown asika:asika /var/lib/asika /var/log/asika
+        
+        # Reload systemd configuration
+        if [ -x /bin/systemctl ]; then
+            systemctl daemon-reload >/dev/null 2>&1 || true
+        fi
+        ;;
+esac
+
+#DEBHELPER#
