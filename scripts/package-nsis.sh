@@ -30,14 +30,23 @@ WORKSPACE="${GITHUB_WORKSPACE:-.}"
 
 # Install NSIS if not present
 if ! command -v makensis &> /dev/null; then
-    if [ -f "/c/Program Files (x86)/NSIS/makensis.exe" ]; then
-        export PATH="/c/Program Files (x86)/NSIS:$PATH"
-    elif [ -f "/c/Program Files/NSIS/makensis.exe" ]; then
-        export PATH="/c/Program Files/NSIS:$PATH"
-    else
-        echo "Installing NSIS..."
-        choco install nsis -y 2>/dev/null || scoop install nsis 2>/dev/null || true
-    fi
+    echo "Installing NSIS via choco..."
+    choco install nsis -y --no-progress --limit-output 2>&1 || true
+    # Search for makensis in common install locations
+    for dir in \
+        "/c/ProgramData/chocolatey/bin" \
+        "/c/ProgramData/chocolatey/lib/nsis" \
+        "/c/ProgramData/chocolatey/lib/nsis/tools" \
+        "/c/Program Files (x86)/NSIS/Bin" \
+        "/c/Program Files (x86)/NSIS" \
+        "/c/Program Files/NSIS/Bin" \
+        "/c/Program Files/NSIS"; do
+        if [ -f "$dir/makensis.exe" ]; then
+            export PATH="$dir:$PATH"
+            echo "Found makensis at: $dir/makensis.exe"
+            break
+        fi
+    done
 fi
 
 if ! command -v makensis &> /dev/null; then
