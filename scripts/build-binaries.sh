@@ -49,7 +49,7 @@ for platform in $PLATFORMS; do
         # Build
         cd "${WORKSPACE}"
         GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w -X 'asika/common/version.Version=${TAG_NAME}'" \
-            -o "${WORKSPACE}/bin/${output_name}" ./cmd/${binary}
+            -o "${WORKSPACE}/bin/${output_name}" ./cmd/"${binary}"
         
         # Reset GOARM if set
         if [ "$GOARCH" = "arm" ]; then

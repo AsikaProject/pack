@@ -72,7 +72,7 @@ makensis install.nsi
 # Move output to dist/
 mkdir -p ../dist
 mv Asika_Setup_*.exe "../dist/asika-${VERSION}-setup.exe" 2>/dev/null || \
-mv *.exe "../dist/asika-${VERSION}-setup.exe" 2>/dev/null || true
+mv ./*.exe "../dist/asika-${VERSION}-setup.exe" 2>/dev/null || true
 
 cd ..
 

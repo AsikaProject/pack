@@ -5,8 +5,6 @@ TAG_NAME="${TAG_NAME:-v0.0.0}"
 VERSION=${TAG_NAME#v}
 DOCKER_REGISTRY="${DOCKER_REGISTRY:-ghcr.io}"
 DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-asika}"
-GITHUB_TOKEN="${GITHUB_TOKEN}"
-GITHUB_ACTOR="${GITHUB_ACTOR}"
 CONTEXT_DIR="${CONTEXT_DIR:-.}"
 
 echo "Building Docker images for version ${VERSION}..."
@@ -32,7 +30,7 @@ fi
 # Only linux/amd64 and linux/arm64 are supported in ghcr.io
 echo "Building and pushing Docker images..."
 docker buildx build \
-    --build-arg VERSION=${VERSION} \
+    --build-arg VERSION="${VERSION}" \
     --platform linux/amd64,linux/arm64 \
     --file "${CONTEXT_DIR}/pack/Dockerfile" \
     --tag "${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:latest" \
