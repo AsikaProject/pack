@@ -47,7 +47,7 @@ for platform in $PLATFORMS; do
         
         # Build
         cd "${GITHUB_WORKSPACE:-.}"
-        GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w" \
+        GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w -X 'asika/common/version.Version=${TAG_NAME}'" \
             -o "bin/${output_name}" ./cmd/${binary}
         
         # Reset GOARM if set
@@ -60,3 +60,4 @@ done
 
 echo "Build complete. Binaries in bin/:"
 ls -lh bin/
+strip ${binary}

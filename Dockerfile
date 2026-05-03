@@ -14,10 +14,11 @@ RUN go mod download
 COPY . .
 
 # Build asika CLI
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /asika ./cmd/asika
+ARG VERSION=dev
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X 'asika/common/version.Version=${VERSION}'" -o /asika ./cmd/asika
 
 # Build asikad daemon
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /asikad ./cmd/asikad
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X 'asika/common/version.Version=${VERSION}'" -o /asikad ./cmd/asikad
 
 # Runtime stage
 FROM alpine:3.21

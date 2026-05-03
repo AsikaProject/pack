@@ -32,6 +32,7 @@ fi
 # Only linux/amd64 and linux/arm64 are supported in ghcr.io
 echo "Building and pushing Docker images..."
 docker buildx build \
+    --build-arg VERSION=${VERSION} \
     --platform linux/amd64,linux/arm64 \
     --file "${CONTEXT_DIR}/pack/Dockerfile" \
     --tag "${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:latest" \
