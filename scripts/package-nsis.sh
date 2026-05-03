@@ -30,8 +30,19 @@ WORKSPACE="${GITHUB_WORKSPACE:-.}"
 
 # Install NSIS if not present
 if ! command -v makensis &> /dev/null; then
-    echo "Installing NSIS..."
-    choco install nsis -y
+    if [ -f "/c/Program Files (x86)/NSIS/makensis.exe" ]; then
+        export PATH="/c/Program Files (x86)/NSIS:$PATH"
+    elif [ -f "/c/Program Files/NSIS/makensis.exe" ]; then
+        export PATH="/c/Program Files/NSIS:$PATH"
+    else
+        echo "Installing NSIS..."
+        choco install nsis -y 2>/dev/null || scoop install nsis 2>/dev/null || true
+    fi
+fi
+
+if ! command -v makensis &> /dev/null; then
+    echo "Error: makensis not found"
+    exit 1
 fi
 
 # Create build directory

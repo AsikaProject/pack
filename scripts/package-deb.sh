@@ -22,13 +22,9 @@ echo "Building DEB packages in Docker..."
 docker run --rm \
     -v "${WORKSPACE}:/workspace" \
     -w "/workspace" \
-    debian:stable \
+    debian:sid \
     bash -c "apt-get update && \
-             apt-get install -y debhelper-compat wget && \
-             wget -q https://go.dev/dl/go1.25.0.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
-             tar -C /usr/local -xzf /tmp/go.tar.gz && \
-             rm /tmp/go.tar.gz && \
-             export PATH=/usr/local/go/bin:\$PATH && \
+             apt-get install -y debhelper-compat golang-go && \
              go version && \
              cp -r pack/debian . && \
              dpkg-buildpackage -b -us -uc 2>&1"
