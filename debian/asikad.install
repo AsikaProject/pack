@@ -1,2 +1,2 @@
-usr/bin/asikad
-usr/lib/systemd/system/asikad.service
+asikad usr/bin/
+templates/service/asikad.service usr/lib/systemd/system/
