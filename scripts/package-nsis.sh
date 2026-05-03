@@ -26,6 +26,8 @@ esac
 
 echo "Building NSIS installer for version ${VERSION} (NSIS version: ${NSIS_VERSION})..."
 
+WORKSPACE="${GITHUB_WORKSPACE:-.}"
+
 # Install NSIS if not present
 if ! command -v makensis &> /dev/null; then
     echo "Installing NSIS..."
@@ -34,8 +36,8 @@ fi
 
 # Create build directory
 mkdir -p nsis-build
-cp "bin/asika-windows-amd64.exe" nsis-build/asika.exe 2>/dev/null || true
-cp "bin/asikad-windows-amd64.exe" nsis-build/asikad.exe 2>/dev/null || true
+cp "${WORKSPACE}/bin/asika-windows-amd64.exe" nsis-build/asika.exe 2>/dev/null || true
+cp "${WORKSPACE}/bin/asikad-windows-amd64.exe" nsis-build/asikad.exe 2>/dev/null || true
 
 # Copy NSIS script
 cp "${WORKSPACE}/pack/templates/nsis/install.nsi" nsis-build/
