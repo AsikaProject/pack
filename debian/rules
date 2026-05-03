@@ -3,5 +3,8 @@
 %:
 	dh $@
 
+override_dh_strip:
+	@echo "Skipping strip (binaries already stripped)"
+
 override_dh_dwz:
 	@echo "Skipping dwz (binaries already stripped)"
