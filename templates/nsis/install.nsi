@@ -2,6 +2,8 @@
 !define PRODUCT_VERSION "0.0.0.0"
 !define INSTALL_DIR "$PROGRAMFILES\${PRODUCT_NAME}"
 
+!include "LogicLib.nsh"
+
 Outfile "Asika_Setup_${PRODUCT_VERSION}.exe"
 InstallDir "${INSTALL_DIR}"
 RequestExecutionLevel admin

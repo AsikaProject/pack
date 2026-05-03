@@ -3,11 +3,5 @@
 %:
 	dh $@
 
-override_dh_auto_build:
-	go build -o asika ./cmd/asika
-	go build -o asikad ./cmd/asikad
-
-override_dh_auto_install:
-	install -Dm755 asika debian/tmp/usr/bin/asika
-	install -Dm755 asikad debian/tmp/usr/bin/asikad
-	install -Dm644 templates/service/asikad.service debian/tmp/usr/lib/systemd/system/asikad.service
+override_dh_dwz:
+	@echo "Skipping dwz (binaries already stripped)"
