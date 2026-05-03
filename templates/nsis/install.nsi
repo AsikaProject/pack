@@ -1,5 +1,5 @@
 !define PRODUCT_NAME "Asika"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "0.0.0.0"
 !define INSTALL_DIR "$PROGRAMFILES\${PRODUCT_NAME}"
 
 Outfile "Asika_Setup_${PRODUCT_VERSION}.exe"

@@ -7,11 +7,16 @@ TAG_NAME="${TAG_NAME:-dev}"
 
 echo "Building binaries with Go ${GO_VERSION}..."
 
-# Download and install Go
-wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O /tmp/go.tar.gz
-tar -C /usr/local -xzf /tmp/go.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-rm /tmp/go.tar.gz
+# Check if Go is available, if not try to install it
+if ! command -v go &> /dev/null; then
+    echo "Go not found, downloading Go ${GO_VERSION}..."
+    wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O /tmp/go.tar.gz
+    tar -C /usr/local -xzf /tmp/go.tar.gz
+    export PATH=$PATH:/usr/local/go/bin
+    rm /tmp/go.tar.gz
+else
+    echo "Go already installed: $(go version)"
+fi
 
 # Platforms to build
 PLATFORMS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64"
