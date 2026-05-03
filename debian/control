@@ -2,7 +2,7 @@ Source: asika
 Section: devel
 Priority: optional
 Maintainer: Asika Project <maintainer@asika.project>
-Build-Depends: debhelper-compat (= 13), golang-go
+Build-Depends: debhelper-compat (= 13), golang-go (>= 1.25.0)
 Standards-Version: 4.6.2
 Homepage: https://github.com/AsikaProject/asika
 Vcs-Git: https://github.com/AsikaProject/asika.git
