@@ -38,7 +38,7 @@ cp "bin/asika-windows-amd64.exe" nsis-build/asika.exe 2>/dev/null || true
 cp "bin/asikad-windows-amd64.exe" nsis-build/asikad.exe 2>/dev/null || true
 
 # Copy NSIS script
-cp templates/nsis/install.nsi nsis-build/
+cp "${WORKSPACE}/pack/templates/nsis/install.nsi" nsis-build/
 
 # Replace version in NSIS script (0.0.0.0 is placeholder)
 cd nsis-build
