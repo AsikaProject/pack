@@ -4,19 +4,25 @@ set -e
 TAG_NAME="${TAG_NAME:-v0.0.0}"
 VERSION=${TAG_NAME#v}
 
-# Convert YYYYMMDD[SUFFIX] to NSIS-compatible version (use first 4 digits: YYYY -> Y.Y.Y.Y)
-# Example: 20260503DEV -> 2.0.2.6 (take first 4 digits of YYYYMMDD)
-if [[ "$VERSION" =~ ^([0-9]{4})([0-9]{2})([0-9]{2}) ]]; then
-    NSIS_VERSION="${BASH_REMATCH[1]:0:1}.${BASH_REMATCH[1]:1:1}.${BASH_REMATCH[1]:2:1}.${BASH_REMATCH[1]:3:1}"
+# Convert YYYYMMDD[SUFFIX] to NSIS-compatible version
+# Example: 20260503 -> 2.0.2.6
+if [[ "$VERSION" =~ ^([0-9]{4}) ]]; then
+    YEAR="${BASH_REMATCH[1]}"
+    NSIS_VERSION="${YEAR:0:1}.${YEAR:1:1}.${YEAR:2:1}.${YEAR:3:1}"
 else
     NSIS_VERSION="0.0.0.0"
 fi
 
 # Check if running on Windows
-if [ "$(uname -s)" != "MINGW"* ] && [ "$(uname -s)" != "MSYS"* ] && [ "$(uname -s)" != "Windows" ]; then
-    echo "Error: NSIS packaging requires Windows runner"
-    exit 1
-fi
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*|Windows)
+        echo "Running on Windows: $(uname -s)"
+        ;;
+    *)
+        echo "Error: NSIS packaging requires Windows runner (current: $(uname -s))"
+        exit 1
+        ;;
+esac
 
 echo "Building NSIS installer for version ${VERSION} (NSIS version: ${NSIS_VERSION})..."
 
