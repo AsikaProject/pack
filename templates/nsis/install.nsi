@@ -10,10 +10,9 @@ SetCompressor lzma
 Section "Install"
     SetOutPath "$INSTDIR"
 
-    ; Copy binaries and config
-    File /r "asikad.exe"
-    File /r "asika.exe"
-    File /r "asika_config.toml"
+    ; Copy binaries
+    File "asikad.exe"
+    File "asika.exe"
 
     ; Set service environment variable via registry
     WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\asikad\Environment" \
