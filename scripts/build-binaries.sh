@@ -4,6 +4,7 @@ set -e
 GO_VERSION="${GO_VERSION:-1.25.0}"
 BINARIES="${BINARIES:-asika,asikad}"
 TAG_NAME="${TAG_NAME:-dev}"
+WORKSPACE="${GITHUB_WORKSPACE:-.}"
 
 echo "Building binaries with Go ${GO_VERSION}..."
 
@@ -22,7 +23,7 @@ fi
 PLATFORMS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64"
 
 # Create output directory
-mkdir -p bin
+mkdir -p "${WORKSPACE}/bin"
 
 for platform in $PLATFORMS; do
     GOOS=${platform%/*}
@@ -46,9 +47,9 @@ for platform in $PLATFORMS; do
         echo "Building ${binary} for ${GOOS}/${GOARCH}..."
         
         # Build
-        cd "${GITHUB_WORKSPACE:-.}"
+        cd "${WORKSPACE}"
         GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w -X 'asika/common/version.Version=${TAG_NAME}'" \
-            -o "bin/${output_name}" ./cmd/${binary}
+            -o "${WORKSPACE}/bin/${output_name}" ./cmd/${binary}
         
         # Reset GOARM if set
         if [ "$GOARCH" = "arm" ]; then
@@ -59,5 +60,4 @@ for platform in $PLATFORMS; do
 done
 
 echo "Build complete. Binaries in bin/:"
-ls -lh bin/
-strip ${binary}
+ls -lh "${WORKSPACE}/bin/"
