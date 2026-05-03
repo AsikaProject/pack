@@ -61,3 +61,17 @@ done
 
 echo "Build complete. Binaries in bin/:"
 ls -lh "${WORKSPACE}/bin/"
+
+# Create tar.gz for each binary
+cd "${WORKSPACE}/bin"
+for f in *; do
+    # Skip directories and already-compressed files
+    if [ -f "$f" ] && [[ "$f" != *.tar.gz ]]; then
+        echo "Creating ${f}.tar.gz..."
+        tar -czf "${f}.tar.gz" "$f"
+    fi
+done
+cd "${WORKSPACE}"
+
+echo "Tar.gz files created:"
+ls -lh "${WORKSPACE}"/bin/*.tar.gz 2>/dev/null || echo "No tar.gz files found"
