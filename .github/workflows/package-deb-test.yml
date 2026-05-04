@@ -1,0 +1,47 @@
+name: Package DEB Test
+
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/package-deb.sh', 'debian/**', 'doc/**']
+  pull_request:
+    branches: [main]
+    paths: ['scripts/package-deb.sh', 'debian/**', 'doc/**']
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Syntax check
+        run: bash -n scripts/package-deb.sh
+      - name: Verify files
+        run: |
+          test -f scripts/package-deb.sh
+          test -d debian/
+          test -d doc/
+          echo "All DEB files present"
+
+  debian-test:
+    needs: syntax-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Create stub binaries
+        run: |
+          touch asika asikad
+          chmod +x asika asikad
+      - name: Test in Docker
+        run: |
+          docker run --rm \
+            -v $(pwd):/workspace \
+            -w /workspace \
+            debian:sid \
+            bash -c "apt-get update && apt-get install -y debhelper-compat golang-go && \
+                     dpkg-buildpackage -b -us -uc" 2>&1
+      - name: Verify .deb files
+        run: |
+          ls -lh *.deb
+          test -f asika_*.deb
+          test -f asikad_*.deb
+          echo "DEB packages created successfully"

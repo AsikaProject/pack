@@ -1,0 +1,19 @@
+name: Build Binaries Test
+
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/build-binaries.sh']
+  pull_request:
+    branches: [main]
+    paths: ['scripts/build-binaries.sh']
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Syntax check
+        run: bash -n scripts/build-binaries.sh
+      - name: Verify script exists
+        run: test -x scripts/build-binaries.sh && echo "Script is executable"

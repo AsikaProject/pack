@@ -1,0 +1,46 @@
+name: Package PKG Test
+
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/package-pkg.sh', 'doc/**']
+  pull_request:
+    branches: [main]
+    paths: ['scripts/package-pkg.sh', 'doc/**']
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Syntax check
+        run: bash -n scripts/package-pkg.sh
+      - name: Verify script exists
+        run: |
+          test -f scripts/package-pkg.sh
+          test -d doc/
+          echo "PKG script and docs present"
+
+  pkg-test:
+    needs: syntax-check
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check OS
+        run: uname -s
+      - name: Create stub binary
+        run: |
+          touch asikad
+          chmod +x asikad
+      - name: Copy doc files
+        run: |
+          mkdir -p pkg-root/usr/local/share/doc/asika
+          cp doc/*.html pkg-root/usr/local/share/doc/asika/ 2>/dev/null || true
+          echo "Docs copied"
+      - name: Test PKG build (syntax only)
+        run: bash -n scripts/package-pkg.sh
+      - name: Verify script structure
+        run: |
+          grep -q "pkgbuild" scripts/package-pkg.sh
+          grep -q "postinstall" scripts/package-pkg.sh
+          echo "PKG script structure OK"
