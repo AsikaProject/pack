@@ -33,6 +33,11 @@ jobs:
         run: |
           touch asika asikad
           chmod +x asika asikad
+      - name: Create mock go.mod (simulates main repo context)
+        run: |
+          echo "module github.com/AsikaProject/asika" > go.mod
+          echo "require github.com/some/dependency v1.0.0" >> go.mod
+          echo "github.com/some/dependency v1.0.0/go.mod h1:abc123" > go.sum
       - name: Test Docker build (no push)
         run: |
           docker buildx create --name testbuilder --driver docker-container --use 2>/dev/null || \
