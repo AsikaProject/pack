@@ -1,0 +1,232 @@
+.TH ASIKAD 1 "2026-05-04" "Asika" "System Commands"
+.SH NAME
+asikad \- Asika Daemon with merge queue, web dashboard, and bot integrations
+.SH SYNOPSIS
+.B asikad
+[OPTIONS]
+.SH DESCRIPTION
+The
+.B asikad
+daemon provides the backend for Asika PR management.
+It handles merge queue processing, web dashboard, webhook events,
+and bot integrations (Telegram, Feishu, Discord).
+.SH OPTIONS
+.TP
+.BI \-desktop
+Run in desktop foreground mode.
+Opens browser to WebUI automatically.
+.TP
+.BI \-version
+Print version and exit.
+.SH ENVIRONMENT
+.TP
+.B ASIKA_CONFIG
+Path to configuration file.
+Default is
+.BI /etc/asika_config.toml .
+.SH CONFIGURATION
+Configuration is stored in TOML format.
+See
+.B asika.toml.example
+for full reference.
+.SS Server Configuration
+.TP
+.B [server]
+listen = ":8080"
+.br
+mode = "release"
+.br
+enable_web_update = true
+.SS Database
+.TP
+.B [database]
+path = "/var/lib/asika/asika.db"
+.SS Authentication
+.TP
+.B [auth]
+jwt_secret = "secret"
+.br
+token_expiry = "72h"
+.SS Platform Tokens
+.TP
+.B [tokens]
+github = "ghp_xxx"
+.br
+gitlab = "glpat-xxx"
+.br
+gitea = "gitea_xxx"
+.SS Events
+.TP
+.B [events]
+mode = "webhook"
+.br
+webhook_secret = "secret"
+.br
+polling_interval = "5m"
+.SS Merge Queue
+.TP
+.B [[repo_groups]]
+name = "my-project"
+.br
+mode = "single"
+.br
+github = "owner/repo"
+.SS Spam Detection
+.TP
+.B [spam]
+enabled = true
+.br
+threshold = 3
+.SS Stale PR Management
+.TP
+.B [stale]
+enabled = true
+.br
+days_until_stale = 21
+.SS Bot Integrations
+.TP
+.B [telegram]
+enabled = true
+.br
+token = "bot-token"
+.TP
+.B [feishu]
+enabled = true
+.br
+app_id = "cli_xxx"
+.TP
+.B [discord]
+enabled = true
+.br
+token = "discord-token"
+.SH API ENDPOINTS
+.SS Authentication
+.TP
+.B POST /api/v1/auth/login
+Login with username/password.
+.TP
+.B POST /api/v1/auth/logout
+Logout.
+.SS PR Management
+.TP
+.B GET /api/v1/repos/:group/prs
+List PRs (filters: state, platform, is_draft, author, label).
+.TP
+.B GET /api/v1/repos/:group/prs/:id
+Get PR details.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/approve
+Approve PR.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/close
+Close PR.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/reopen
+Reopen PR.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/spam
+Mark as spam.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/comment
+Comment on PR.
+.TP
+.B POST /api/v1/repos/:group/prs/batch/approve
+Batch approve PRs.
+.TP
+.B POST /api/v1/repos/:group/prs/batch/close
+Batch close PRs.
+.TP
+.B POST /api/v1/repos/:group/prs/batch/label
+Batch label PRs.
+.SS Queue Management
+.TP
+.B GET /api/v1/queue/:group
+Get merge queue.
+.TP
+.B POST /api/v1/queue/:group/recheck
+Trigger queue recheck.
+.SS Audit Logs
+.TP
+.B GET /api/v1/logs
+Get audit logs (?level=info|warn|error).
+.SS Configuration
+.TP
+.B GET /api/v1/config
+Get current config (admin only).
+.TP
+.B PUT /api/v1/config
+Update config (admin only, hot-reloadable).
+.SS Self-Update
+.TP
+.B GET /api/v1/self-update/check
+Check for new version.
+.TP
+.B GET /api/v1/self-update/run
+Perform self-update (SSE progress).
+.SS Webhooks
+.TP
+.B POST /webhook/:group/:platform
+Receive platform webhooks.
+.TP
+.B POST /api/v1/feishu/event
+Feishu event callback.
+.SS Health Check
+.TP
+.B GET /health
+Health check endpoint.
+.SH WEB DASHBOARD
+The web dashboard is available at the server address (default: http://localhost:8080).
+.TP
+.B /wizard
+First-time setup wizard.
+.TP
+.B /login
+User login page.
+.TP
+.B /dashboard
+Main dashboard with statistics.
+.TP
+.B /prs
+PR list view.
+.TP
+.B /prs/:id
+Individual PR detail view.
+.TP
+.B /queue
+Merge queue view.
+.TP
+.B /users
+User management (admin).
+.TP
+.B /config
+Configuration editor (admin).
+.SH INSTALLATION
+Install the binary and setup systemd service:
+.TP
+Copy binary:
+.B cp asikad /usr/local/bin/
+.TP
+Install service:
+.B cp pack/debian/asikad.service /etc/systemd/system/
+.TP
+Enable and start:
+.B systemctl enable asikad && systemctl start asikad
+.SH FILES
+.I /etc/asika_config.toml
+Main configuration file.
+.I /var/lib/asika/asika.db
+Default database path.
+.I /var/log/asikad.log
+Log file (if configured).
+.SH SEE ALSO
+.BR asika (1)
+\- Asika CLI documentation.
+.br
+.BR https://github.com/minibp/asika
+\- Project homepage.
+.SH AUTHORS
+Asika Project.
+.SH COPYRIGHT
+BSD 3-Clause License.
+.SH HISTORY
+2026-05-04: Initial documentation.

@@ -34,6 +34,15 @@ mkdir -p "$ROOT_DIR/Library/LaunchDaemons"
 cp "$BINARY" "$ROOT_DIR/usr/local/bin/asikad"
 chmod 755 "$ROOT_DIR/usr/local/bin/asikad"
 
+# Copy documentation
+mkdir -p "$ROOT_DIR/usr/local/share/doc/asika"
+if [ -f "${WORKSPACE}/pack/doc/asikad.html" ]; then
+    cp "${WORKSPACE}/pack/doc/asikad.html" "$ROOT_DIR/usr/local/share/doc/asika/"
+fi
+if [ -f "${WORKSPACE}/pack/doc/asika.html" ]; then
+    cp "${WORKSPACE}/pack/doc/asika.html" "$ROOT_DIR/usr/local/share/doc/asika/"
+fi
+
 # Copy and fix LaunchDaemon plist from pack templates
 PLIST_TEMPLATE="${WORKSPACE}/pack/templates/service/com.asika.daemon.plist"
 if [ -f "$PLIST_TEMPLATE" ]; then

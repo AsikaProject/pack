@@ -1,0 +1,159 @@
+.TH ASIKA 1 "2026-05-04" "Asika" "User Commands"
+.SH NAME
+asika \- Asika PR Manager CLI
+.SH SYNOPSIS
+.B asika
+[OPTIONS] COMMAND [SUBCOMMAND] [ARGUMENTS]
+.SH DESCRIPTION
+Asika is a multi-platform pull request management tool. The CLI interacts with the asikad daemon to manage PRs across GitHub, GitLab, and Gitea platforms from a single interface.
+.SH GLOBAL OPTIONS
+.TP
+.BI \-t " token"
+.BI \-\-token " token"
+JWT token for authentication.
+Can also be set via
+.B ASIKA_TOKEN
+environment variable.
+.TP
+.BI \-s " url"
+.BI \-\-server " url"
+asikad server address (default: http://localhost:8080).
+Can also be set via
+.B ASIKA_SERVER
+environment variable.
+.TP
+.BI \-o " format"
+.BI \-\-output " format"
+Output format: table, json, yaml (default: table).
+.SH COMMANDS
+.SS asika completion
+Generate the autocompletion script for the specified shell.
+.TP
+Usage:
+.B asika completion
+[bash|zsh|fish|powershell]
+.SS asika config
+Manage asikad configuration.
+.TP
+.B asika config show
+Show current config (secrets masked).
+.TP
+.B asika config set
+[\-\-file " path"]
+Set config from file or stdin (TOML format).
+.TP
+.B asika config reload
+Trigger hot reload of config.
+.SS asika init
+Run configuration wizard (sends setup to server).
+.SS asika login
+Login to asikad and save token for future requests.
+.SS asika pr
+Manage pull requests.
+.TP
+.B asika pr list
+[group] [\-\-state open|closed|merged] [\-\-platform github|gitlab|gitea]
+[\-\-is_draft true|false] [\-\-author " name"]
+[\-\-label " label"] [\-\-created_after " time"]
+[\-\-updated_after " time"] [\-\-page " n"] [\-\-per_page " n"]
+List PRs with filters.
+.TP
+.B asika pr show
+[group] [id]
+Show PR details.
+.TP
+.B asika pr approve
+[group] [id]
+Approve PR.
+.TP
+.B asika pr close
+[group] [id]
+Close PR.
+.TP
+.B asika pr reopen
+[group] [id]
+Reopen PR.
+.TP
+.B asika pr spam
+[group] [id] [\-\-undo]
+Mark/unmark as spam.
+.TP
+.B asika pr comment
+[group] [id] [body]
+Comment on PR.
+.TP
+.B asika pr batch\-approve
+[group] [id1,id2,...]
+Batch approve PRs.
+.TP
+.B asika pr batch\-close
+[group] [id1,id2,...]
+Batch close PRs.
+.TP
+.B asika pr batch\-label
+[group] [id1,id2,...] \-\-label " name" [\-\-color " hex"]
+Batch add label to PRs.
+.SS asika queue
+Manage merge queue.
+.TP
+.B asika queue list
+[group]
+Show merge queue.
+.TP
+.B asika queue recheck
+[group]
+Trigger queue recheck.
+.SS asika rules
+Manage label rules (auto-labeling by file patterns).
+.SS asika self\-update
+Update asika/asikad to the latest version.
+.TP
+Options:
+[\-\-version " tag"] [\-\-check] [\-\-dry\-run] [\-\-yes] [\-\-rollback] [\-\-restart]
+.TP
+Examples:
+.B asika self\-update \-\-check
+.br
+.B asika self\-update
+.br
+.B asika self\-update \-\-rollback
+.SS asika stale
+Manage stale PRs.
+.TP
+.B asika stale check
+[group] [\-\-dry\-run]
+Check for stale PRs.
+.TP
+.B asika stale unmark
+[group] [id]
+Remove stale label.
+.SS asika sync
+Manage sync history (multi mode).
+.TP
+.B asika sync history
+Show sync history.
+.TP
+.B asika sync retry
+[sync_id]
+Retry failed sync.
+.SS asika user
+Manage users (admin only).
+.SS asika version
+Print version information.
+.SH ENVIRONMENT
+.TP
+.B ASIKA_TOKEN
+JWT token for authentication.
+.TP
+.B ASIKA_SERVER
+asikad server address.
+.SH FILES
+.I ~/.config/asika/config.json
+CLI configuration file storing token and server settings.
+.SH SEE ALSO
+.BR asikad (1)
+\- Asika daemon documentation.
+.SH AUTHORS
+Asika Project.
+.SH HISTORY
+2026-05-04: Initial documentation.

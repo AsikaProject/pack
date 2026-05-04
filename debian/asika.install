@@ -1,1 +1,3 @@
 asika usr/bin/
+doc/asika.1 usr/share/man/man1/
+doc/asika.html usr/share/doc/asika/

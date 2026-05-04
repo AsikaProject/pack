@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asika - PR Manager CLI</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+h2 { color: #34495e; margin-top: 30px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; }
+h3 { color: #7f8c8d; }
+code { background: #f8f8f8; padding: 2px 6px; border-radius: 3px; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; }
+pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
+pre code { background: none; padding: 0; color: #ecf0f1; }
+table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background: #3498db; color: white; }
+tr:nth-child(even) { background: #f8f8f8; }
+a { color: #3498db; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.see-also { background: #ecf0f1; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<h1>asika - PR Manager CLI</h1>
+
+<h2>NAME</h2>
+<p><code>asika</code> - Asika Pull Request Manager Command Line Interface</p>
+
+<h2>SYNOPSIS</h2>
+<pre><code>asika [OPTIONS] COMMAND [SUBCOMMAND] [ARGUMENTS]</code></pre>
+
+<h2>DESCRIPTION</h2>
+<p>Asika is a multi-platform pull request management tool. The CLI interacts with the <code>asikad</code> daemon to manage PRs across GitHub, GitLab, and Gitea platforms from a single interface.</p>
+
+<h2>GLOBAL OPTIONS</h2>
+<table>
+<tr><th>Option</th><th>Short</th><th>Description</th></tr>
+<tr><td><code>--token &lt;token&gt;</code></td><td><code>-t</code></td><td>JWT token for authentication (or use ASIKA_TOKEN env)</td></tr>
+<tr><td><code>--server &lt;url&gt;</code></td><td><code>-s</code></td><td>asikad server address (default: http://localhost:8080)</td></tr>
+<tr><td><code>--output &lt;format&gt;</code></td><td><code>-o</code></td><td>Output format: table, json, yaml (default: table)</td></tr>
+</table>
+
+<p>Environment variables: <code>ASIKA_TOKEN</code>, <code>ASIKA_SERVER</code></p>
+
+<h2>COMMANDS</h2>
+
+<h3>asika completion</h3>
+<p>Generate the autocompletion script for the specified shell.</p>
+<pre><code>asika completion [bash|zsh|fish|powershell]</code></pre>
+
+<h3>asika config</h3>
+<p>Manage asikad configuration.</p>
+<table>
+<tr><th>Subcommand</th><th>Description</th></tr>
+<tr><td><code>show</code></td><td>Show current config (secrets masked)</td></tr>
+<tr><td><code>set [--file &lt;path&gt;]</code></td><td>Set config from file or stdin (TOML format)</td></tr>
+<tr><td><code>reload</code></td><td>Trigger hot reload of config</td></tr>
+</table>
+<pre><code># Show config
+asika config show
+
+# Set config from file
+asika config set --file /path/to/config.toml
+
+# Set config from stdin
+cat config.toml | asika config set
+
+# Reload config
+asika config reload</code></pre>
+
+<h3>asika init</h3>
+<p>Run configuration wizard (sends setup to server).</p>
+<pre><code>asika init</code></pre>
+
+<h3>asika login</h3>
+<p>Login to asikad and save token for future requests.</p>
+<pre><code>asika login</code></pre>
+
+<h3>asika pr</h3>
+<p>Manage pull requests.</p>
+<table>
+<tr><th>Subcommand</th><th>Arguments</th><th>Flags</th><th>Description</th></tr>
+<tr><td><code>list</code></td><td><code>[group]</code></td><td><code>--state open|closed|merged</code><br><code>--platform github|gitlab|gitea</code><br><code>--is_draft true|false</code><br><code>--author &lt;name&gt;</code><br><code>--label &lt;label&gt;</code><br><code>--created_after &lt;time&gt;</code><br><code>--updated_after &lt;time&gt;</code><br><code>--page &lt;n&gt;</code><br><code>--per_page &lt;n&gt;</code></td><td>List PRs with filters</td></tr>
+<tr><td><code>show</code></td><td><code>[group] [id]</code></td><td>-</td><td>Show PR details</td></tr>
+<tr><td><code>approve</code></td><td><code>[group] [id]</code></td><td>-</td><td>Approve PR</td></tr>
+<tr><td><code>close</code></td><td><code>[group] [id]</code></td><td>-</td><td>Close PR</td></tr>
+<tr><td><code>reopen</code></td><td><code>[group] [id]</code></td><td>-</td><td>Reopen PR</td></tr>
+<tr><td><code>spam</code></td><td><code>[group] [id]</code></td><td><code>--undo</code></td><td>Mark/unmark as spam</td></tr>
+<tr><td><code>comment</code></td><td><code>[group] [id] [body]</code></td><td>-</td><td>Comment on PR</td></tr>
+<tr><td><code>batch-approve</code></td><td><code>[group] [id1,id2,...]</code></td><td>-</td><td>Batch approve PRs</td></tr>
+<tr><td><code>batch-close</code></td><td><code>[group] [id1,id2,...]</code></td><td>-</td><td>Batch close PRs</td></tr>
+<tr><td><code>batch-label</code></td><td><code>[group] [id1,id2,...]</code></td><td><code>--label &lt;name&gt;</code><br><code>--color &lt;hex&gt;</code></td><td>Batch add label</td></tr>
+</table>
+<pre><code># List open PRs
+asika pr list my-project
+
+# List draft PRs
+asika pr list my-project --is_draft true
+
+# Show PR details
+asika pr show my-project 42
+
+# Approve PR
+asika pr approve my-project 42
+
+# Add comment
+asika pr comment my-project 42 "LGTM!"
+
+# Batch approve
+asika pr batch-approve my-project 42,43,44
+
+# Batch add label
+asika pr batch-label my-project 42,43 --label bugfix --color "#ff0000"</code></pre>
+
+<h3>asika queue</h3>
+<p>Manage merge queue.</p>
+<table>
+<tr><th>Subcommand</th><th>Arguments</th><th>Description</th></tr>
+<tr><td><code>list</code></td><td><code>[group]</code></td><td>Show merge queue</td></tr>
+<tr><td><code>recheck</code></td><td><code>[group]</code></td><td>Trigger queue recheck</td></tr>
+</table>
+<pre><code># List queue
+asika queue list my-project
+
+# Trigger recheck
+asika queue recheck my-project</code></pre>
+
+<h3>asika rules</h3>
+<p>Manage label rules (auto-labeling by file patterns).</p>
+<pre><code>asika rules [SUBCOMMAND]</code></pre>
+
+<h3>asika self-update</h3>
+<p>Update asika/asikad to the latest version.</p>
+<table>
+<tr><th>Flag</th><th>Description</th></tr>
+<tr><td><code>--version &lt;tag&gt;</code></td><td>Install specific version</td></tr>
+<tr><td><code>--check</code></td><td>Only check for updates</td></tr>
+<tr><td><code>--dry-run</code></td><td>Preview without changes</td></tr>
+<tr><td><code>--yes</code></td><td>Skip confirmation</td></tr>
+<tr><td><code>--rollback</code></td><td>Rollback to previous version</td></tr>
+<tr><td><code>--restart</code></td><td>Restart in-place after update</td></tr>
+</table>
+<pre><code># Check for updates
+asika self-update --check
+
+# Update to latest
+asika self-update
+
+# Dry run
+asika self-update --dry-run
+
+# Rollback
+asika self-update --rollback</code></pre>
+
+<h3>asika stale</h3>
+<p>Manage stale PRs.</p>
+<table>
+<tr><th>Subcommand</th><th>Arguments</th><th>Flags</th><th>Description</th></tr>
+<tr><td><code>check</code></td><td><code>[group]</code></td><td><code>--dry-run</code></td><td>Check for stale PRs</td></tr>
+<tr><td><code>unmark</code></td><td><code>[group] [id]</code></td><td>-</td><td>Remove stale label</td></tr>
+</table>
+
+<h3>asika sync</h3>
+<p>Manage sync history (multi mode).</p>
+<table>
+<tr><th>Subcommand</th><th>Description</th></tr>
+<tr><td><code>history</code></td><td>Show sync history</td></tr>
+<tr><td><code>retry [sync_id]</code></td><td>Retry failed sync</td></tr>
+</table>
+
+<h3>asika user</h3>
+<p>Manage users (admin only).</p>
+
+<h3>asika version</h3>
+<p>Print version information.</p>
+<pre><code>asika version
+Asika version 20260504DEV</code></pre>
+
+<h2>CONFIGURATION</h2>
+<p>CLI config is stored at <code>~/.config/asika/config.json</code> with token and server settings.</p>
+
+<h2>SEE ALSO</h2>
+<div class="see-also">
+<p><a href="asikad.html">asikad(1)</a> - Asika daemon documentation</p>
+<p><a href="https://github.com/minibp/asika">Project homepage</a></p>
+</div>
+
+<h2>AUTHORS</h2>
+<p>Asika Project</p>
+
+</body>
+</html>

@@ -63,6 +63,21 @@ cp "${WORKSPACE}/pack/templates/nsis/asika.ico" nsis-build/
 cp "${WORKSPACE}/pack/templates/nsis/header.bmp" nsis-build/
 cp "${WORKSPACE}/pack/templates/nsis/welcome.bmp" nsis-build/
 
+# Copy documentation
+mkdir -p nsis-build/doc
+if [ -f "${WORKSPACE}/pack/doc/asika.html" ]; then
+    cp "${WORKSPACE}/pack/doc/asika.html" nsis-build/doc/
+fi
+if [ -f "${WORKSPACE}/pack/doc/asikad.html" ]; then
+    cp "${WORKSPACE}/pack/doc/asikad.html" nsis-build/doc/
+fi
+if [ -f "${WORKSPACE}/pack/doc/asika.1" ]; then
+    cp "${WORKSPACE}/pack/doc/asika.1" nsis-build/doc/
+fi
+if [ -f "${WORKSPACE}/pack/doc/asikad.1" ]; then
+    cp "${WORKSPACE}/pack/doc/asikad.1" nsis-build/doc/
+fi
+
 # Copy NSIS script
 cp "${WORKSPACE}/pack/templates/nsis/install.nsi" nsis-build/
 

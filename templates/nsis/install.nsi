@@ -37,6 +37,10 @@ LangString DESC_Service ${LANG_ENGLISH} "Install and start Asika as a Windows se
 LangString DESC_Service ${LANG_SIMPCHINESE} "将 Asika 安装为 Windows 服务并配置防火墙规则"
 LangString DESC_Service ${LANG_JAPANESE} "Asika を Windows サービスとしてインストールし、ファイアウォール規則を設定"
 
+LangString DESC_Docs ${LANG_ENGLISH} "HTML and manpage documentation for asika and asikad"
+LangString DESC_Docs ${LANG_SIMPCHINESE} "asika 和 asikad 的 HTML 和 manpage 文档"
+LangString DESC_Docs ${LANG_JAPANESE} "asika と asikad の HTML および manpage ドキュメント"
+
 LangString DESC_Finish ${LANG_ENGLISH} "Completing the ${PRODUCT_NAME} Setup Wizard$\r$\n$\r$\n${PRODUCT_NAME} has been installed on your computer.$\r$\n$\r$\nClick Finish to close this wizard."
 LangString DESC_Finish ${LANG_SIMPCHINESE} "${PRODUCT_NAME} 安装向导完成$\r$\n$\r$\n${PRODUCT_NAME} 已安装到您的计算机上。$\r$\n$\r$\n点击完成以关闭此向导。"
 LangString DESC_Finish ${LANG_JAPANESE} "${PRODUCT_NAME} セットアップウィザードの完了$\r$\n$\r$\n${PRODUCT_NAME} がコンピューターにインストールされました。$\r$\n$\r$\n［完了］をクリックしてウィザードを閉じます。"
@@ -82,11 +86,20 @@ SectionEnd
 Section /o "Install as Windows Service" SEC_SERVICE
 SectionEnd
 
+Section /o "Documentation" SEC_DOCS
+    SetOutPath "$INSTDIR\doc"
+    File "doc\asika.html"
+    File "doc\asikad.html"
+    File "doc\asika.1"
+    File "doc\asikad.1"
+SectionEnd
+
 ; Section descriptions (must be after sections)
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SEC_ASIKAD} $(DESC_Asikad)
     !insertmacro MUI_DESCRIPTION_TEXT ${SEC_CLI} $(DESC_Cli)
     !insertmacro MUI_DESCRIPTION_TEXT ${SEC_SERVICE} $(DESC_Service)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SEC_DOCS} $(DESC_Docs)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function .onInit
@@ -172,6 +185,7 @@ Section "Uninstall"
     Delete "$INSTDIR\asikad.exe"
     Delete "$INSTDIR\asika.exe"
     Delete "$INSTDIR\uninstall.exe"
+    RMDir /r "$INSTDIR\doc"
     
     ; Remove directory if empty
     RMDir "$INSTDIR"

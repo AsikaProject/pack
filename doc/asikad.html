@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asikad - Asika Daemon</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin:0 auto; padding: 20px; color: #333; }
+h1 { color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; }
+h2 { color: #34495e; margin-top: 30px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; }
+h3 { color: #7f8c8d; }
+code { background: #f8f8f8; padding: 2px 6px; border-radius: 3px; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; }
+pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
+pre code { background: none; padding:0; color: #ecf0f1; }
+table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background: #e74c3c; color: white; }
+tr:nth-child(even) { background: #f8f8f8; }
+a { color: #e74c3c; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.see-also { background: #ecf0f1; padding: 15px; border-left: 4px solid #e74c3c; margin: 20px 0; }
+.endpoint { background: #f8f8f8; padding: 10px; margin: 10px 0; border-left: 3px solid #3498db; }
+.method { display: inline-block; padding: 2px 8px; border-radius: 3px; font-weight: bold; color: white; }
+.get { background: #27ae60; }
+.post { background: #2980b9; }
+.put { background: #f39c12; }
+.delete { background: #c0392b; }
+</style>
+</head>
+<body>
+
+<h1>asikad - Asika Daemon</h1>
+
+<h2>NAME</h2>
+<p><code>asikad</code> - Asika Daemon with merge queue, web dashboard, and bot integrations</p>
+
+<h2>SYNOPSIS</h2>
+<pre><code>asikad [OPTIONS]</code></pre>
+
+<h2>DESCRIPTION</h2>
+<p>The <code>asikad</code> daemon provides the backend for Asika PR management. It handles:</p>
+<ul>
+<li><strong>Merge Queue</strong> - Automated PR merging with approval/CI checks</li>
+<li><strong>Web Dashboard</strong> - Browser-based PR management interface</li>
+<li><strong>Webhook Handler</strong> - Receives events from GitHub/GitLab/Gitea</li>
+<li><strong>Bot Integrations</strong> - Telegram, Feishu, Discord interactive bots</li>
+<li><strong>Spam Detection</strong> - Automatic spam PR detection</li>
+<li><strong>Stale PR Management</strong> - Auto-label and close stale PRs</li>
+</ul>
+
+<h2>OPTIONS</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-desktop</code></td><td>Run in desktop foreground mode (opens browser to WebUI automatically)</td></tr>
+<tr><td><code>-version</code></td><td>Print version and exit</td></tr>
+</table>
+
+<h2>ENVIRONMENT</h2>
+<table>
+<tr><th>Variable</th><th>Description</th><th>Default</th></tr>
+<tr><td><code>ASIKA_CONFIG</code></td><td>Path to config file</td><td><code>/etc/asika_config.toml</code></td></tr>
+</table>
+
+<h2>CONFIGURATION</h2>
+<p>Configuration is stored in TOML format at <code>/etc/asika_config.toml</code> (or path specified by <code>ASIKA_CONFIG</code>).</p>
+
+<h3>Server Configuration</h3>
+<pre><code>[server]
+listen = ":8080"          # Listen address
+mode = "release"         # "release" or debug
+enable_web_update = true  # Allow self-update from web UI</code></pre>
+
+<h3>Database</h3>
+<pre><code>[database]
+path = "/var/lib/asika/asika.db"</code></pre>
+
+<h3>Authentication</h3>
+<pre><code>[auth]
+jwt_secret = "your-secret-here"
+token_expiry = "72h"</code></pre>
+
+<h3>Platform Tokens</h3>
+<pre><code>[tokens]
+github = "ghp_xxx"    # GitHub personal access token
+gitlab = "glpat-xxx"  # GitLab personal access token
+gitea = "gitea_xxx"  # Gitea token</code></pre>
+
+<h3>Events (Webhook/Polling)</h3>
+<pre><code>[events]
+mode = "webhook"           # "webhook" or "polling"
+webhook_secret = "secret"   # Webhook signing secret
+polling_interval = "5m"    # Polling interval (for polling mode)</code></pre>
+
+<h3>Merge Queue</h3>
+<pre><code>[merge_queue]
+required_approvals = 1
+ci_check_required = true
+core_contributors = ["user1", "user2"]
+
+[[repo_groups]]
+name = "my-project"
+mode = "single"            # "single" or "multi"
+github = "owner/repo"
+default_branch = "main"</code></pre>
+
+<h3>Spam Detection</h3>
+<pre><code>[spam]
+enabled = true
+time_window = "10m"
+threshold = 3
+trigger_on_author = true
+trigger_on_title_kw = ["spam", "fix typo"]</code></pre>
+
+<h3>Stale PR Management</h3>
+<pre><code>[stale]
+enabled = true
+check_interval = "6h"
+days_until_stale = 21
+days_until_close = 0      # 0 = never close
+stale_label = "stale"
+exempt_labels = ["long-term"]
+notify_on_stale = true
+skip_draft_prs = true</code></pre>
+
+<h3>Bot Integrations</h3>
+<pre><code># Telegram
+[telegram]
+enabled = true
+token = "bot-token"
+admin_ids = [123456]
+
+# Feishu/Lark
+[feishu]
+enabled = true
+app_id = "cli_xxx"
+app_secret = "xxx"
+
+# Discord
+[discord]
+enabled = true
+token = "discord-bot-token"
+channel_id = "123456"</code></pre>
+
+<h2>API ENDPOINTS</h2>
+
+<h3>Authentication</h3>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/login</code> - Login with username/password</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/logout</code> - Logout</div>
+
+<h3>PR Management</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs</code> - List PRs (filters: state, is_draft, author, label, etc.)</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs/:id</code> - Get PR details</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/approve</code> - Approve PR</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/close</code> - Close PR</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/reopen</code> - Reopen PR</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/spam</code> - Mark as spam</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/comment</code> - Comment on PR</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/approve</code> - Batch approve</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/close</code> - Batch close</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/label</code> - Batch label</div>
+
+<h3>Queue Management</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/queue/:group</code> - Get merge queue</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/queue/:group/recheck</code> - Trigger recheck</div>
+
+<h3>Audit Logs</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/logs</code> - Get audit logs (?level=info|warn|error)</div>
+
+<h3>Configuration</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/config</code> - Get config (admin only)</div>
+<div class="endpoint"><span class="method put">PUT</span> <code>/api/v1/config</code> - Update config (admin only, hot-reloadable)</div>
+
+<h3>Self-Update</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/self-update/check</code> - Check for updates</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/self-update/run</code> - Perform update (SSE progress)</div>
+
+<h3>Webhooks (No Auth)</h3>
+<div class="endpoint"><span class="method post">POST</span> <code>/webhook/:group/:platform</code> - Receive platform webhooks</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/feishu/event</code> - Feishu event callback</div>
+
+<h3>Health Check</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/health</code> - Health check</div>
+
+<h2>WEB DASHBOARD</h2>
+<p>The web dashboard is available at the server address (default: <code>http://localhost:8080</code>).</p>
+<ul>
+<li><strong>Wizard</strong> (<code>/wizard</code>) - First-time setup</li>
+<li><strong>Login</strong> (<code>/login</code>) - User authentication</li>
+<li><strong>Dashboard</strong> (<code>/dashboard</code>) - Statistics and overview</li>
+<li><strong>PR List</strong> (<code>/prs</code>) - Browse and filter PRs</li>
+<li><strong>PR Detail</strong> (<code>/prs/:id</code>) - PR details and actions</li>
+<li><strong>Queue</strong> (<code>/queue</code>) - Merge queue management</li>
+<li><strong>Users</strong> (<code>/users</code>) - User management (admin)</li>
+<li><strong>Config</strong> (<code>/config</code>) - Configuration editor (admin)</li>
+</ul>
+
+<h2>INSTALLATION</h2>
+<pre><code># Build from source
+git clone https://github.com/minibp/asika.git
+cd asika
+bash build.sh
+
+# Install binaries
+sudo cp asika asikad /usr/local/bin/
+
+# Setup systemd service (Linux)
+sudo cp pack/debian/asikad.service /etc/systemd/system/
+sudo systemctl enable asikad
+sudo systemctl start asikad</code></pre>
+
+<h2>SEE ALSO</h2>
+<div class="see-also">
+<p><a href="asika.html">asika(1)</a> - Asika CLI documentation</p>
+<p><a href="https://github.com/minibp/asika">Project homepage</a></p>
+<p><a href="https://github.com/minibp/asika/blob/main/asika.toml.example">Full configuration example</a></p>
+</div>
+
+<h2>AUTHORS</h2>
+<p>Asika Project</p>
+
+<h2>COPYRIGHT</h2>
+<p>BSD 3-Clause License</p>
+
+</body>
+</html>

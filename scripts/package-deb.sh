@@ -27,6 +27,7 @@ cp "${WORKSPACE}/asika" "$BUILD_SUBDIR/" 2>/dev/null || true
 cp "${WORKSPACE}/asikad" "$BUILD_SUBDIR/" 2>/dev/null || true
 cp -r "${WORKSPACE}/pack/debian" "$BUILD_SUBDIR/"
 cp -r "${WORKSPACE}/pack/templates" "$BUILD_SUBDIR/"
+cp -r "${WORKSPACE}/pack/doc" "$BUILD_SUBDIR/"
 
 # Build in Docker
 echo "Building DEB packages in Docker..."

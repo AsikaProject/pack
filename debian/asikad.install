@@ -1,2 +1,4 @@
 asikad usr/bin/
 templates/service/asikad.service usr/lib/systemd/system/
+doc/asikad.1 usr/share/man/man1/
+doc/asikad.html usr/share/doc/asikad/
