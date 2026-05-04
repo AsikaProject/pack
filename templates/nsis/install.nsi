@@ -9,9 +9,10 @@
 !define MUI_UNICON "asika.ico"
 !define MUI_ABORTWARNING
 
-; Header image (150x57 pixels)
+; Header image (300x114 pixels - 2x recommended size)
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
 
 ; Welcome/Finish page image (328x628 pixels - 2x recommended size)
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
