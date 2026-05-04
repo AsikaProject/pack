@@ -25,8 +25,6 @@ dpkg-buildpackage -us -uc
   - `templates/nsis/` - Installer resources:
     - `install.nsi` - Modern UI with components, multi-language (EN/CN/JP), firewall rules
     - `asika.ico` - Installer/uninstaller icon (replace with branded icon)
-    - `header.bmp` - Page header image (150x57 px, replace with custom)
-    - `welcome.bmp` - Welcome/Finish page image (164x314 px, replace with custom)
   - `package-pkg.sh` - macOS .pkg installer (requires macOS runner)
   - `package-docker.sh` - Multi-arch Docker images via buildx
 - `debian/` - Standard Debian packaging (source package: `asika`, binary: `asika` + `asikad`)

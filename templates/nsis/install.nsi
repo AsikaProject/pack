@@ -9,15 +9,6 @@
 !define MUI_UNICON "asika.ico"
 !define MUI_ABORTWARNING
 
-; Header image (300x114 pixels - 2x recommended size)
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "header.bmp"
-!define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
-
-; Welcome/Finish page image (328x628 pixels - 2x recommended size)
-!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
-
 ; Language strings
 LangString DESC_Welcome ${LANG_ENGLISH} "Welcome to the ${PRODUCT_NAME} Setup Wizard.$\r$\n$\r$\nThis wizard will guide you through the installation of ${PRODUCT_NAME}.$\r$\n$\r$\nIt is recommended that you close all other applications before continuing."
 LangString DESC_Welcome ${LANG_SIMPCHINESE} "欢迎使用 ${PRODUCT_NAME} 安装向导。$\r$\n$\r$\n此向导将引导您安装 ${PRODUCT_NAME}。$\r$\n$\r$\n建议在继续之前关闭所有其他应用程序。"

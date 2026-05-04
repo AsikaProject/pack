@@ -60,8 +60,6 @@ cp "${WORKSPACE}/bin/asika-windows-amd64.exe" nsis-build/asika.exe 2>/dev/null |
 cp "${WORKSPACE}/bin/asikad-windows-amd64.exe" nsis-build/asikad.exe 2>/dev/null || true
 cp "${WORKSPACE}/pack/LICENSE" nsis-build/LICENSE
 cp "${WORKSPACE}/pack/templates/nsis/asika.ico" nsis-build/
-cp "${WORKSPACE}/pack/templates/nsis/header.bmp" nsis-build/
-cp "${WORKSPACE}/pack/templates/nsis/welcome.bmp" nsis-build/
 
 # Copy documentation
 mkdir -p nsis-build/doc
