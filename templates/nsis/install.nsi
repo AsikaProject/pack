@@ -13,8 +13,9 @@
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
 
-; Welcome/Finish page image (164x314 pixels)
+; Welcome/Finish page image (328x628 pixels - 2x recommended size)
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 
 ; Language strings
 LangString DESC_Welcome ${LANG_ENGLISH} "Welcome to the ${PRODUCT_NAME} Setup Wizard.$\r$\n$\r$\nThis wizard will guide you through the installation of ${PRODUCT_NAME}.$\r$\n$\r$\nIt is recommended that you close all other applications before continuing."
