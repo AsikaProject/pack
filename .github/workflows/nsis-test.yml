@@ -1,0 +1,70 @@
+name: NSIS Test
+
+on:
+  push:
+    branches: [main]
+    paths: ['templates/nsis/**', 'scripts/package-nsis.sh', 'doc/**']
+  pull_request:
+    branches: [main]
+    paths: ['templates/nsis/**', 'scripts/package-nsis.sh', 'doc/**']
+
+jobs:
+  nsis-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install NSIS
+        shell: pwsh
+        run: |
+          choco install nsis -y --no-progress --limit-output
+          $env:Path += ";C:\ProgramData\chocolatey\lib\nsis\tools"
+          Write-Host "NSIS installed"
+
+      - name: Create build directory
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path nsis-build
+          New-Item -ItemType Directory -Force -Path "nsis-build/doc"
+          Write-Host "Build directory created"
+
+      - name: Create stub binaries
+        shell: pwsh
+        run: |
+          New-Item -ItemType File -Force -Path "nsis-build/asika.exe"
+          New-Item -ItemType File -Force -Path "nsis-build/asikad.exe"
+          Write-Host "Stub binaries created"
+
+      - name: Copy doc files
+        shell: pwsh
+        run: |
+          Copy-Item "doc/*.html" "nsis-build/doc/" -ErrorAction SilentlyContinue
+          Copy-Item "doc/*.1" "nsis-build/doc/" -ErrorAction SilentlyContinue
+          Write-Host "Docs copied"
+
+      - name: Copy NSIS templates
+        shell: pwsh
+        run: |
+          Copy-Item "templates/nsis/*" "nsis-build/" -Recurse
+          Write-Host "Templates copied"
+
+      - name: Replace version with sed (simulate package-nsis.sh)
+        shell: bash
+        run: |
+          cd nsis-build
+          sed -i "s/0.0.0.0/1.0.0.0/g" install.nsi
+          echo "=== install.nsi (first 5 lines) ==="
+          head -5 install.nsi
+
+      - name: Run makensis (generate actual exe)
+        shell: pwsh
+        run: |
+          Set-Location nsis-build
+          makensis install.nsi
+          if (-not (Test-Path "Asika_Setup_*.exe")) {
+            Write-Host "ERROR: No exe generated"
+            Get-ChildItem .
+            exit 1
+          }
+          Write-Host "SUCCESS: exe generated"
+          Get-ChildItem "Asika_Setup_*.exe"
