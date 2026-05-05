@@ -21,6 +21,8 @@ LicenseFile=LICENSE
 PrivilegesRequired=admin
 UninstallDisplayIcon={app}\asikad.exe
 
+ArchitecturesInstallIn64BitMode=x64
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
