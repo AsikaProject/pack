@@ -28,10 +28,10 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
 [Components]
-Name: "core"; Description: "Asika Daemon (Required)"; Flags: fixed
-Name: "cli"; Description: "Asika CLI"
-Name: "service"; Description: "Install as Windows Service"
-Name: "docs"; Description: "Documentation"
+Name: "core"; Description: "Asika Daemon (Required)"; Types: full compact custom; Flags: fixed
+Name: "cli"; Description: "Asika CLI"; Types: full compact
+Name: "service"; Description: "Install as Windows Service"; Types: full; Flags: restart
+Name: "docs"; Description: "Asika Documentation"; Types: full
 
 [Tasks]
 Name: "addtopath"; Description: "Add Asika to PATH"; Flags: unchecked

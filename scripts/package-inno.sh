@@ -4,14 +4,7 @@ set -e
 TAG_NAME="${TAG_NAME:-v0.0.0}"
 VERSION=${TAG_NAME#v}
 
-# Convert YYYYMMDD[SUFFIX] to Inno Setup compatible version
-# Example: 20260503 -> 2.0.2.6
-if [[ "$VERSION" =~ ^([0-9]{4}) ]]; then
-    YEAR="${BASH_REMATCH[1]}"
-    INNO_VERSION="${YEAR:0:1}.${YEAR:1:1}.${YEAR:2:1}.${YEAR:3:1}"
-else
-    INNO_VERSION="0.0.0.0"
-fi
+INNO_VERSION="$VERSION"
 
 # Check if running on Windows
 case "$(uname -s)" in

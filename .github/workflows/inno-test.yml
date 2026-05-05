@@ -72,3 +72,7 @@ jobs:
           }
           Write-Host "SUCCESS: exe generated"
           Get-ChildItem "Asika_Setup_*.exe"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: setup
+          path: Output/*.exe
