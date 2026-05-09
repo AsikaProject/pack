@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asikad - Asika Daemon</title>
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin:0 auto; padding: 20px; color: #333; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
 h1 { color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; }
 h2 { color: #34495e; margin-top: 30px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; }
 h3 { color: #7f8c8d; }
 code { background: #f8f8f8; padding: 2px 6px; border-radius: 3px; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; }
 pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
-pre code { background: none; padding:0; color: #ecf0f1; }
+pre code { background: none; padding: 0; color: #ecf0f1; }
 table { border-collapse: collapse; width: 100%; margin: 15px 0; }
 th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
 th { background: #e74c3c; color: white; }
@@ -25,50 +25,65 @@ a:hover { text-decoration: underline; }
 .post { background: #2980b9; }
 .put { background: #f39c12; }
 .delete { background: #c0392b; }
+.toc { background: #f8f8f8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+.toc ol { margin: 5px 0; }
 </style>
 </head>
 <body>
 
-<h1>asikad - Asika Daemon</h1>
+<h1>asikad — Asika Daemon</h1>
 
-<h2>NAME</h2>
-<p><code>asikad</code> - Asika Daemon with merge queue, web dashboard, and bot integrations</p>
+<div class="toc">
+<strong>Contents:</strong>
+<ol>
+<li><a href="#name">NAME</a></li>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#options">OPTIONS</a></li>
+<li><a href="#environment">ENVIRONMENT</a></li>
+<li><a href="#configuration">CONFIGURATION</a></li>
+<li><a href="#api">API ENDPOINTS</a></li>
+<li><a href="#auth">AUTHENTICATION</a></li>
+<li><a href="#permissions">PERMISSION MODEL</a></li>
+<li><a href="#webui">WEB DASHBOARD</a></li>
+<li><a href="#bot">BOT COMMANDS</a></li>
+<li><a href="#installation">INSTALLATION</a></li>
+<li><a href="#files">FILES</a></li>
+<li><a href="#see-also">SEE ALSO</a></li>
+<li><a href="#history">HISTORY</a></li>
+</ol>
+</div>
 
-<h2>SYNOPSIS</h2>
+<h2 id="name">NAME</h2>
+<p><code>asikad</code> — Asika Daemon with merge queue, web dashboard, and bot integrations</p>
+
+<h2 id="synopsis">SYNOPSIS</h2>
 <pre><code>asikad [OPTIONS]</code></pre>
 
-<h2>DESCRIPTION</h2>
-<p>The <code>asikad</code> daemon provides the backend for Asika PR management. It handles:</p>
-<ul>
-<li><strong>Merge Queue</strong> - Automated PR merging with approval/CI checks</li>
-<li><strong>Web Dashboard</strong> - Browser-based PR management interface</li>
-<li><strong>Webhook Handler</strong> - Receives events from GitHub/GitLab/Gitea</li>
-<li><strong>Bot Integrations</strong> - Telegram, Feishu, Discord interactive bots</li>
-<li><strong>Spam Detection</strong> - Automatic spam PR detection</li>
-<li><strong>Stale PR Management</strong> - Auto-label and close stale PRs</li>
-</ul>
+<h2 id="description">DESCRIPTION</h2>
+<p>The <code>asikad</code> daemon provides the backend for Asika PR management. It handles merge queue processing, web dashboard, webhook events, and bot integrations (Telegram, Feishu, Discord, Slack).</p>
 
-<h2>OPTIONS</h2>
+<h2 id="options">OPTIONS</h2>
 <table>
 <tr><th>Option</th><th>Description</th></tr>
-<tr><td><code>-desktop</code></td><td>Run in desktop foreground mode (opens browser to WebUI automatically)</td></tr>
-<tr><td><code>-version</code></td><td>Print version and exit</td></tr>
+<tr><td><code>-desktop</code></td><td>Run in desktop foreground mode. Opens browser to WebUI automatically.</td></tr>
+<tr><td><code>-version</code></td><td>Print version and exit.</td></tr>
 </table>
 
-<h2>ENVIRONMENT</h2>
+<h2 id="environment">ENVIRONMENT</h2>
 <table>
-<tr><th>Variable</th><th>Description</th><th>Default</th></tr>
-<tr><td><code>ASIKA_CONFIG</code></td><td>Path to config file</td><td><code>/etc/asika_config.toml</code></td></tr>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>ASIKA_CONFIG</code></td><td>Path to configuration file. Default: <code>/etc/asika_config.toml</code></td></tr>
 </table>
 
-<h2>CONFIGURATION</h2>
-<p>Configuration is stored in TOML format at <code>/etc/asika_config.toml</code> (or path specified by <code>ASIKA_CONFIG</code>).</p>
+<h2 id="configuration">CONFIGURATION</h2>
+<p>Configuration is stored in TOML format. See <code>asika.toml.example</code> for full reference.</p>
 
 <h3>Server Configuration</h3>
 <pre><code>[server]
-listen = ":8080"          # Listen address
-mode = "release"         # "release" or debug
-enable_web_update = true  # Allow self-update from web UI</code></pre>
+listen = ":8080"
+mode = "release"
+enable_web_update = true</code></pre>
 
 <h3>Database</h3>
 <pre><code>[database]
@@ -76,150 +91,194 @@ path = "/var/lib/asika/asika.db"</code></pre>
 
 <h3>Authentication</h3>
 <pre><code>[auth]
-jwt_secret = "your-secret-here"
+jwt_secret = "secret"
 token_expiry = "72h"</code></pre>
 
-<h3>Platform Tokens</h3>
-<pre><code>[tokens]
-github = "ghp_xxx"    # GitHub personal access token
-gitlab = "glpat-xxx"  # GitLab personal access token
-gitea = "gitea_xxx"  # Gitea token</code></pre>
-
-<h3>Events (Webhook/Polling)</h3>
-<pre><code>[events]
-mode = "webhook"           # "webhook" or "polling"
-webhook_secret = "secret"   # Webhook signing secret
-polling_interval = "5m"    # Polling interval (for polling mode)</code></pre>
-
-<h3>Merge Queue</h3>
-<pre><code>[merge_queue]
-required_approvals = 1
-ci_check_required = true
-core_contributors = ["user1", "user2"]
-
-[[repo_groups]]
-name = "my-project"
-mode = "single"            # "single" or "multi"
-github = "owner/repo"
-default_branch = "main"</code></pre>
-
-<h3>Spam Detection</h3>
-<pre><code>[spam]
-enabled = true
-time_window = "10m"
-threshold = 3
-trigger_on_author = true
-trigger_on_title_kw = ["spam", "fix typo"]</code></pre>
-
-<h3>Stale PR Management</h3>
-<pre><code>[stale]
-enabled = true
-check_interval = "6h"
-days_until_stale = 21
-days_until_close = 0      # 0 = never close
-stale_label = "stale"
-exempt_labels = ["long-term"]
-notify_on_stale = true
-skip_draft_prs = true</code></pre>
-
 <h3>Bot Integrations</h3>
-<pre><code># Telegram
-[telegram]
-enabled = true
-token = "bot-token"
-admin_ids = [123456]
+<pre><code>[telegram]
+enabled    = true
+token      = "bot-token"
+admin_ids    = [12345678]
+operator_ids = [11111111]
+viewer_ids   = [22222222]
 
-# Feishu/Lark
 [feishu]
-enabled = true
-app_id = "cli_xxx"
-app_secret = "xxx"
+enabled      = true
+app_id       = "cli_xxx"
+admin_ids    = ["ou_xxx"]
+operator_ids = ["ou_yyy"]
 
-# Discord
 [discord]
-enabled = true
-token = "discord-bot-token"
-channel_id = "123456"</code></pre>
+enabled      = true
+token        = "discord-token"
+admin_ids    = ["user_id_1"]
+operator_ids = ["user_id_2"]
 
-<h2>API ENDPOINTS</h2>
+[slack]
+enabled      = true
+token        = "xoxb-token"
+admin_ids    = ["U0123456789"]
+operator_ids = ["U0987654321"]</code></pre>
+
+<h2 id="api">API ENDPOINTS</h2>
 
 <h3>Authentication</h3>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/login</code> - Login with username/password</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/logout</code> - Logout</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/login</code> — Login with username/password. Returns JWT token.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/auth/logout</code> — Logout (blacklists JWT token).</div>
 
 <h3>PR Management</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs</code> - List PRs (filters: state, is_draft, author, label, etc.)</div>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs/:id</code> - Get PR details</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/approve</code> - Approve PR</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/close</code> - Close PR</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/reopen</code> - Reopen PR</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/spam</code> - Mark as spam</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/comment</code> - Comment on PR</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/approve</code> - Batch approve</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/close</code> - Batch close</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/label</code> - Batch label</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs</code> — List PRs. Requires: viewer+ role, repo group access.</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/repos/:group/prs/:id</code> — Get PR details. Requires: viewer+ role.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/approve</code> — Approve PR. Requires: approve permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/close</code> — Close PR. Requires: close permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/reopen</code> — Reopen PR. Requires: reopen permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/spam</code> — Mark as spam. Requires: spam permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/rebase</code> — Rebase PR. Requires: merge permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/:id/cherry-pick</code> — Cherry-pick merged PR. Requires: merge permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/approve</code> — Batch approve. Requires: approve permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/close</code> — Batch close. Requires: close permission.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/repos/:group/prs/batch/label</code> — Batch label. Requires: viewer+ role.</div>
 
 <h3>Queue Management</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/queue/:group</code> - Get merge queue</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/queue/:group/recheck</code> - Trigger recheck</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/queue/:group</code> — Get merge queue. Requires: viewer+ role.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/queue/:group/recheck</code> — Trigger queue recheck. Requires: manage_queue permission.</div>
+<div class="endpoint"><span class="method delete">DELETE</span> <code>/api/v1/queue/:group</code> — Clear queue. Requires: manage_queue permission.</div>
+<div class="endpoint"><span class="method delete">DELETE</span> <code>/api/v1/queue/:group/:id</code> — Remove from queue. Requires: manage_queue permission.</div>
 
-<h3>Audit Logs</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/logs</code> - Get audit logs (?level=info|warn|error)</div>
+<h3>User Management (admin only)</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/users</code> — List all users.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/users</code> — Create user.</div>
+<div class="endpoint"><span class="method put">PUT</span> <code>/api/v1/users/:username</code> — Update user.</div>
+<div class="endpoint"><span class="method delete">DELETE</span> <code>/api/v1/users/:username</code> — Delete user.</div>
 
-<h3>Configuration</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/config</code> - Get config (admin only)</div>
-<div class="endpoint"><span class="method put">PUT</span> <code>/api/v1/config</code> - Update config (admin only, hot-reloadable)</div>
+<h3>API Key Management (admin only)</h3>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/apikeys</code> — Create API key. Returns key with raw secret (shown once).</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/apikeys</code> — List all API keys (raw secrets not shown).</div>
+<div class="endpoint"><span class="method delete">DELETE</span> <code>/api/v1/apikeys/:id</code> — Revoke API key.</div>
 
-<h3>Self-Update</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/self-update/check</code> - Check for updates</div>
-<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/self-update/run</code> - Perform update (SSE progress)</div>
+<h3>Stats & Usage</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/stats</code> — DORA metrics and overview statistics. Requires: any authenticated user.</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/usage</code> — Real-time CPU and memory usage. Requires: any authenticated user.</div>
 
-<h3>Webhooks (No Auth)</h3>
-<div class="endpoint"><span class="method post">POST</span> <code>/webhook/:group/:platform</code> - Receive platform webhooks</div>
-<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/feishu/event</code> - Feishu event callback</div>
+<h3>Configuration (admin only)</h3>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/config</code> — Get current config (secrets masked).</div>
+<div class="endpoint"><span class="method put">PUT</span> <code>/api/v1/config</code> — Update config (hot-reloadable).</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/config/history</code> — Config version history.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/config/rollback</code> — Rollback config.</div>
+
+<h3>Admin Operations</h3>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/admin/backup</code> — Create database backup.</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/api/v1/admin/backups</code> — List backups.</div>
+<div class="endpoint"><span class="method post">POST</span> <code>/api/v1/admin/restore</code> — Restore from backup.</div>
 
 <h3>Health Check</h3>
-<div class="endpoint"><span class="method get">GET</span> <code>/health</code> - Health check</div>
+<div class="endpoint"><span class="method get">GET</span> <code>/health</code> — Health check (no auth required).</div>
 
-<h2>WEB DASHBOARD</h2>
-<p>The web dashboard is available at the server address (default: <code>http://localhost:8080</code>).</p>
-<ul>
-<li><strong>Wizard</strong> (<code>/wizard</code>) - First-time setup</li>
-<li><strong>Login</strong> (<code>/login</code>) - User authentication</li>
-<li><strong>Dashboard</strong> (<code>/dashboard</code>) - Statistics and overview</li>
-<li><strong>PR List</strong> (<code>/prs</code>) - Browse and filter PRs</li>
-<li><strong>PR Detail</strong> (<code>/prs/:id</code>) - PR details and actions</li>
-<li><strong>Queue</strong> (<code>/queue</code>) - Merge queue management</li>
-<li><strong>Users</strong> (<code>/users</code>) - User management (admin)</li>
-<li><strong>Config</strong> (<code>/config</code>) - Configuration editor (admin)</li>
-</ul>
+<h2 id="auth">AUTHENTICATION</h2>
+<p>Two authentication methods are supported:</p>
+<table>
+<tr><th>Method</th><th>Header</th><th>Description</th></tr>
+<tr><td>JWT (Bearer)</td><td><code>Authorization: Bearer &lt;token&gt;</code></td><td>Obtained via <code>POST /api/v1/auth/login</code>. Default expiry: 72h.</td></tr>
+<tr><td>API Key</td><td><code>X-API-Key: &lt;key&gt;</code></td><td>Long-lived key for CI/CD. Created via <code>POST /api/v1/apikeys</code> (admin only). Format: <code>ak_</code> + 64 hex chars.</td></tr>
+</table>
 
-<h2>INSTALLATION</h2>
-<pre><code># Build from source
-git clone https://github.com/minibp/asika.git
-cd asika
-bash build.sh
+<h2 id="permissions">PERMISSION MODEL</h2>
+<table>
+<tr><th>Permission</th><th>Admin</th><th>Operator</th><th>Viewer</th></tr>
+<tr><td>View PRs</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Approve PRs</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>Merge/Rebase</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>Close PRs</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>Reopen PRs</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>Mark Spam</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>Manage Queue</td><td>✅</td><td>Configurable</td><td>❌</td></tr>
+<tr><td>User Management</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td>Config Management</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td>API Key Management</td><td>✅</td><td>❌</td><td>❌</td></tr>
+</table>
+<p>Admins bypass all permission and repo group checks. Operator permissions are configurable per-user via <code>UserPermissions</code>.</p>
 
-# Install binaries
-sudo cp asika asikad /usr/local/bin/
+<h2 id="webui">WEB DASHBOARD</h2>
+<table>
+<tr><th>Path</th><th>Description</th></tr>
+<tr><td><code>/wizard</code></td><td>First-time setup wizard.</td></tr>
+<tr><td><code>/login</code></td><td>User login page.</td></tr>
+<tr><td><code>/dashboard</code></td><td>Main dashboard with DORA metrics, overview stats, PR breakdowns.</td></tr>
+<tr><td><code>/prs</code></td><td>PR list view with filtering.</td></tr>
+<tr><td><code>/repos/:group/prs/:id</code></td><td>Individual PR detail view.</td></tr>
+<tr><td><code>/queue</code></td><td>Merge queue management.</td></tr>
+<tr><td><code>/users</code></td><td>User management (admin).</td></tr>
+<tr><td><code>/apikeys</code></td><td>API key management (admin) — create, list, revoke keys.</td></tr>
+<tr><td><code>/usage</code></td><td>Real-time system usage (CPU, memory, GOMEMLIMIT).</td></tr>
+<tr><td><code>/settings</code></td><td>Merge queue config, spam detection, stale PR management, label rules.</td></tr>
+<tr><td><code>/config</code></td><td>Raw TOML editor, system info, self-update (admin).</td></tr>
+</table>
 
-# Setup systemd service (Linux)
-sudo cp pack/debian/asikad.service /etc/systemd/system/
-sudo systemctl enable asikad
-sudo systemctl start asikad</code></pre>
+<h2 id="bot">BOT COMMANDS</h2>
+<p>All four bot platforms (Telegram, Feishu, Discord, Slack) support the same command structure:</p>
 
-<h2>SEE ALSO</h2>
+<h3>User Management (admin only)</h3>
+<pre><code>adduser &lt;username&gt; &lt;password&gt; &lt;role&gt; [groups]
+deluser &lt;username&gt;
+listusers</code></pre>
+
+<h3>API Key Management (admin only)</h3>
+<pre><code>apikey new &lt;name&gt; &lt;role&gt;
+apikey list
+apikey revoke &lt;key_id&gt;</code></pre>
+<p>API keys are delivered via DM and auto-deleted after 2 minutes.</p>
+
+<h3>PR Operations</h3>
+<pre><code>prs [group]           List PRs
+pr &lt;group&gt; &lt;id&gt;       Show PR details
+approve &lt;group&gt; &lt;id&gt;  Approve PR
+close &lt;group&gt; &lt;id&gt;    Close PR
+reopen &lt;group&gt; &lt;id&gt;   Reopen PR
+spam &lt;group&gt; &lt;id&gt;     Mark as spam</code></pre>
+
+<h3>Queue Operations</h3>
+<pre><code>queue [group]         Show merge queue
+recheck               Trigger queue recheck
+queue_clear           Clear queue</code></pre>
+
+<h3>System</h3>
+<pre><code>stats                 DORA metrics
+usage                 CPU/memory usage
+config                Show config summary
+version               Show version info
+help                  Show all commands</code></pre>
+
+<h2 id="installation">INSTALLATION</h2>
+<pre><code># Copy binary
+cp asikad /usr/local/bin/
+
+# Install systemd service
+cp pack/debian/asikad.service /etc/systemd/system/
+
+# Enable and start
+systemctl enable asikad &amp;&amp; systemctl start asikad</code></pre>
+
+<h2 id="files">FILES</h2>
+<table>
+<tr><th>File</th><th>Description</th></tr>
+<tr><td><code>/etc/asika_config.toml</code></td><td>Main configuration file.</td></tr>
+<tr><td><code>/var/lib/asika/asika.db</code></td><td>Default database path.</td></tr>
+</table>
+
+<h2 id="see-also">SEE ALSO</h2>
 <div class="see-also">
-<p><a href="asika.html">asika(1)</a> - Asika CLI documentation</p>
-<p><a href="https://github.com/minibp/asika">Project homepage</a></p>
-<p><a href="https://github.com/minibp/asika/blob/main/asika.toml.example">Full configuration example</a></p>
+<p><code>asika(1)</code> — Asika CLI documentation.</p>
+<p><a href="https://github.com/minibp/asika">https://github.com/minibp/asika</a> — Project homepage.</p>
 </div>
 
-<h2>AUTHORS</h2>
-<p>Asika Project</p>
+<h2 id="history">HISTORY</h2>
+<table>
+<tr><th>Date</th><th>Changes</th></tr>
+<tr><td>2026-05-04</td><td>Initial documentation.</td></tr>
+<tr><td>2026-05-09</td><td>Added API key management, bot UID permissions, updated API endpoints.</td></tr>
+</table>
 
-<h2>COPYRIGHT</h2>
-<p>BSD 3-Clause License</p>
+<p><em>Asika Project. BSD 3-Clause License.</em></p>
 
 </body>
 </html>

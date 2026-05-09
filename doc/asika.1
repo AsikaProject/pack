@@ -1,16 +1,16 @@
-.TH ASIKA 1 "2026-05-04" "Asika" "User Commands"
+.TH ASIKA 1 "2026-05-09" "Asika" "User Commands"
 .SH NAME
 asika \- Asika PR Manager CLI
 .SH SYNOPSIS
 .B asika
 [OPTIONS] COMMAND [SUBCOMMAND] [ARGUMENTS]
 .SH DESCRIPTION
-Asika is a multi-platform pull request management tool. The CLI interacts with the asikad daemon to manage PRs across GitHub, GitLab, and Gitea platforms from a single interface.
+Asika is a multi-platform pull request management tool. The CLI interacts with the asikad daemon to manage PRs across GitHub, GitLab, Gitea, Forgejo, Codeberg, and Bitbucket from a single interface.
 .SH GLOBAL OPTIONS
 .TP
 .BI \-t " token"
 .BI \-\-token " token"
-JWT token for authentication.
+JWT token or API key for authentication.
 Can also be set via
 .B ASIKA_TOKEN
 environment variable.
@@ -25,6 +25,15 @@ environment variable.
 .BI \-o " format"
 .BI \-\-output " format"
 Output format: table, json, yaml (default: table).
+.SH AUTHENTICATION
+.TP
+.B asika login [-\-username <user>] [-\-password <pass>] [-\-save]
+Login with username/password to obtain JWT token. Use
+.B \-\-save
+to persist credentials to ~/.config/asika/config.json.
+.TP
+.B asika login \-\-api-key <key> [-\-save]
+Save an API key directly (e.g. from WebUI). No username/password needed.
 .SH COMMANDS
 .SS asika completion
 Generate the autocompletion script for the specified shell.
@@ -48,6 +57,7 @@ Trigger hot reload of config.
 Run configuration wizard (sends setup to server).
 .SS asika login
 Login to asikad and save token for future requests.
+See AUTHENTICATION above.
 .SS asika pr
 Manage pull requests.
 .TP
@@ -82,6 +92,14 @@ Mark/unmark as spam.
 [group] [id] [body]
 Comment on PR.
 .TP
+.B asika pr rebase
+[group] [id]
+Rebase PR onto base branch.
+.TP
+.B asika pr cherry-pick
+[group] [id] <target-branch>
+Cherry-pick merged PR.
+.TP
 .B asika pr batch\-approve
 [group] [id1,id2,...]
 Batch approve PRs.
@@ -103,8 +121,53 @@ Show merge queue.
 .B asika queue recheck
 [group]
 Trigger queue recheck.
+.TP
+.B asika queue clear
+[group]
+Clear all queue items.
+.TP
+.B asika queue remove
+<group> <id>
+Remove specific PR from queue.
+.SS asika apikey
+Manage API keys (admin only).
+.TP
+.B asika apikey create <name> <role>
+Create a new API key. Role: admin, operator, viewer.
+Returns the raw key (shown once).
+.TP
+.B asika apikey list
+List all API keys (raw secrets not shown).
+.TP
+.B asika apikey revoke <key_id>
+Revoke an API key.
+.SS asika user
+Manage users (admin only).
+.TP
+.B asika user list
+List all users.
+.TP
+.B asika user add <username> \-\-password <pwd> \-\-role <role> [\-\-groups <g1,g2>] [\-\-permissions <p1,p2>]
+Create a new user.
+Roles: admin, operator, viewer.
+Permissions: approve, merge, close, reopen, spam, queue.
+.TP
+.B asika user update <username> [\-\-password <pwd>] [\-\-role <role>] [\-\-groups <g1,g2>] [\-\-permissions <p1,p2>] [\-\-no\-perms <p1,p2>]
+Update an existing user.
+.TP
+.B asika user delete <username>
+Delete a user.
 .SS asika rules
 Manage label rules (auto-labeling by file patterns).
+.TP
+.B asika rules list
+List label rules.
+.TP
+.B asika rules add <pattern> <label>
+Add label rule.
+.TP
+.B asika rules remove <pattern>
+Remove label rule.
 .SS asika self\-update
 Update asika/asikad to the latest version.
 .TP
@@ -136,20 +199,24 @@ Show sync history.
 .B asika sync retry
 [sync_id]
 Retry failed sync.
-.SS asika user
-Manage users (admin only).
+.SS asika stats
+Show DORA metrics and overview statistics.
+.SS asika usage
+Show real-time CPU and memory usage.
 .SS asika version
 Print version information.
 .SH ENVIRONMENT
 .TP
 .B ASIKA_TOKEN
-JWT token for authentication.
+JWT token or API key for authentication.
 .TP
 .B ASIKA_SERVER
 asikad server address.
 .SH FILES
 .I ~/.config/asika/config.json
 CLI configuration file storing token and server settings.
+.I /etc/asika_config.toml
+Server configuration file.
 .SH SEE ALSO
 .BR asikad (1)
 \- Asika daemon documentation.
@@ -157,3 +224,5 @@ CLI configuration file storing token and server settings.
 Asika Project.
 .SH HISTORY
 2026-05-04: Initial documentation.
+.br
+2026-05-09: Added apikey command, updated user management.

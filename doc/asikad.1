@@ -1,4 +1,4 @@
-.TH ASIKAD 1 "2026-05-04" "Asika" "System Commands"
+.TH ASIKAD 1 "2026-05-09" "Asika" "System Commands"
 .SH NAME
 asikad \- Asika Daemon with merge queue, web dashboard, and bot integrations
 .SH SYNOPSIS
@@ -9,7 +9,7 @@ The
 .B asikad
 daemon provides the backend for Asika PR management.
 It handles merge queue processing, web dashboard, webhook events,
-and bot integrations (Telegram, Feishu, Discord).
+and bot integrations (Telegram, Feishu, Discord, Slack).
 .SH OPTIONS
 .TP
 .BI \-desktop
@@ -89,91 +89,267 @@ days_until_stale = 21
 enabled = true
 .br
 token = "bot-token"
+.br
+admin_ids = [12345678]
+.br
+operator_ids = [11111111]
+.br
+viewer_ids = [22222222]
 .TP
 .B [feishu]
 enabled = true
 .br
 app_id = "cli_xxx"
+.br
+admin_ids = ["ou_xxx"]
+.br
+operator_ids = ["ou_yyy"]
 .TP
 .B [discord]
 enabled = true
 .br
 token = "discord-token"
+.br
+admin_ids = ["user_id_1"]
+.br
+operator_ids = ["user_id_2"]
+.TP
+.B [slack]
+enabled = true
+.br
+token = "xoxb-token"
+.br
+admin_ids = ["U0123456789"]
+.br
+operator_ids = ["U0987654321"]
 .SH API ENDPOINTS
 .SS Authentication
 .TP
 .B POST /api/v1/auth/login
-Login with username/password.
+Login with username/password. Returns JWT token.
 .TP
 .B POST /api/v1/auth/logout
-Logout.
+Logout (blacklists JWT token).
 .SS PR Management
 .TP
 .B GET /api/v1/repos/:group/prs
 List PRs (filters: state, platform, is_draft, author, label).
+Requires: viewer+ role, repo group access.
 .TP
 .B GET /api/v1/repos/:group/prs/:id
 Get PR details.
+Requires: viewer+ role, repo group access.
 .TP
 .B POST /api/v1/repos/:group/prs/:id/approve
 Approve PR.
+Requires: approve permission.
 .TP
 .B POST /api/v1/repos/:group/prs/:id/close
 Close PR.
+Requires: close permission.
 .TP
 .B POST /api/v1/repos/:group/prs/:id/reopen
 Reopen PR.
+Requires: reopen permission.
 .TP
 .B POST /api/v1/repos/:group/prs/:id/spam
 Mark as spam.
+Requires: spam permission.
 .TP
 .B POST /api/v1/repos/:group/prs/:id/comment
 Comment on PR.
+Requires: viewer+ role.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/rebase
+Rebase PR onto base branch.
+Requires: merge permission.
+.TP
+.B POST /api/v1/repos/:group/prs/:id/cherry-pick
+Cherry-pick merged PR.
+Requires: merge permission.
 .TP
 .B POST /api/v1/repos/:group/prs/batch/approve
 Batch approve PRs.
+Requires: approve permission.
 .TP
 .B POST /api/v1/repos/:group/prs/batch/close
 Batch close PRs.
+Requires: close permission.
 .TP
 .B POST /api/v1/repos/:group/prs/batch/label
 Batch label PRs.
+Requires: viewer+ role.
 .SS Queue Management
 .TP
 .B GET /api/v1/queue/:group
 Get merge queue.
+Requires: viewer+ role, repo group access.
 .TP
 .B POST /api/v1/queue/:group/recheck
 Trigger queue recheck.
+Requires: manage_queue permission.
+.TP
+.B POST /api/v1/queue/:group/rebase
+Rebase all queue items.
+Requires: manage_queue permission.
+.TP
+.B DELETE /api/v1/queue/:group
+Clear all queue items.
+Requires: manage_queue permission.
+.TP
+.B DELETE /api/v1/queue/:group/:id
+Remove specific PR from queue.
+Requires: manage_queue permission.
+.SS User Management
+.TP
+.B GET /api/v1/users
+List all users.
+Requires: admin role.
+.TP
+.B POST /api/v1/users
+Create user.
+Requires: admin role.
+.TP
+.B PUT /api/v1/users/:username
+Update user.
+Requires: admin role.
+.TP
+.B DELETE /api/v1/users/:username
+Delete user.
+Requires: admin role.
+.SS API Key Management
+.TP
+.B POST /api/v1/apikeys
+Create API key. Returns key with raw secret (shown once).
+Requires: admin role.
+.TP
+.B GET /api/v1/apikeys
+List all API keys (raw secrets not shown).
+Requires: admin role.
+.TP
+.B DELETE /api/v1/apikeys/:id
+Revoke API key.
+Requires: admin role.
+.SS Stats & Usage
+.TP
+.B GET /api/v1/stats
+Get DORA metrics and overview statistics.
+Requires: any authenticated user.
+.TP
+.B GET /api/v1/usage
+Get real-time CPU and memory usage.
+Requires: any authenticated user.
 .SS Audit Logs
 .TP
 .B GET /api/v1/logs
-Get audit logs (?level=info|warn|error).
+Get audit logs (?level=info|warn|error, ?export=csv).
+Requires: viewer+ role.
+.SS Sync History
+.TP
+.B GET /api/v1/sync/history
+Get sync history.
+Requires: viewer+ role.
+.TP
+.B POST /api/v1/sync/retry/:id
+Retry failed sync.
+Requires: viewer+ role.
 .SS Configuration
 .TP
 .B GET /api/v1/config
-Get current config (admin only).
+Get current config (admin only, secrets masked).
+Requires: admin role.
 .TP
 .B PUT /api/v1/config
 Update config (admin only, hot-reloadable).
+Requires: admin role.
+.TP
+.B GET /api/v1/config/history
+Get config version history.
+Requires: admin role.
+.TP
+.B POST /api/v1/config/rollback
+Rollback config to a previous version.
+Requires: admin role.
+.SS Admin Operations
+.TP
+.B POST /api/v1/admin/backup
+Create database backup.
+Requires: admin role.
+.TP
+.B GET /api/v1/admin/backups
+List available backups.
+Requires: admin role.
+.TP
+.B POST /api/v1/admin/restore
+Restore from backup.
+Requires: admin role.
+.TP
+.B POST /api/v1/test/notify
+Send test notification.
+Requires: admin role.
+.TP
+.B POST /api/v1/stale/check
+Trigger stale PR check.
+Requires: admin role.
 .SS Self-Update
 .TP
 .B GET /api/v1/self-update/check
 Check for new version.
+Requires: admin role.
 .TP
 .B GET /api/v1/self-update/run
 Perform self-update (SSE progress).
+Requires: admin role.
 .SS Webhooks
 .TP
 .B POST /webhook/:group/:platform
-Receive platform webhooks.
+Receive platform webhooks (GitHub, GitLab, Gitea, Forgejo, Codeberg, Bitbucket).
+HMAC signature verified.
 .TP
 .B POST /api/v1/feishu/event
 Feishu event callback.
 .SS Health Check
 .TP
 .B GET /health
-Health check endpoint.
+Health check endpoint (no auth required).
+.SH AUTHENTICATION
+Two authentication methods are supported:
+.TP
+.B JWT (Bearer token)
+Obtained via
+.B POST /api/v1/auth/login
+with username/password. Token is passed via
+.B Authorization: Bearer <token>
+header or
+.B asika
+_token cookie. Default expiry: 72h.
+.TP
+.B API Key
+Long-lived key for CI/CD and external integrations. Created via
+.B POST /api/v1/apikeys
+(admin only). Passed via
+.B X-API-Key: <key>
+header. Format: ak_<64 hex chars>. Stored as bcrypt hash.
+.SH PERMISSION MODEL
+Three-tier role hierarchy with six granular permissions:
+.TS
+center box;
+cb cb cb cb
+l c c c.
+Role	Admin	Operator	Viewer
+_
+View PRs	✅	✅	✅
+Approve PRs	✅	Configurable	❌
+Merge/Rebase	✅	Configurable	❌
+Close PRs	✅	Configurable	❌
+Reopen PRs	✅	Configurable	❌
+Mark Spam	✅	Configurable	❌
+Manage Queue	✅	Configurable	❌
+User Management	✅	❌	❌
+Config Management	✅	❌	❌
+API Key Management	✅	❌	❌
+.TE
+Admins bypass all permission and repo group checks.
 .SH WEB DASHBOARD
 The web dashboard is available at the server address (default: http://localhost:8080).
 .TP
@@ -184,22 +360,78 @@ First-time setup wizard.
 User login page.
 .TP
 .B /dashboard
-Main dashboard with statistics.
+Main dashboard with DORA metrics, overview stats, PR breakdowns, recent activity.
 .TP
 .B /prs
-PR list view.
+PR list view with filtering.
 .TP
-.B /prs/:id
+.B /repos/:group/prs/:id
 Individual PR detail view.
 .TP
 .B /queue
-Merge queue view.
+Merge queue management.
 .TP
 .B /users
 User management (admin).
 .TP
+.B /apikeys
+API key management (admin) — create, list, revoke keys.
+.TP
+.B /usage
+Real-time system usage (CPU, memory, GOMEMLIMIT).
+.TP
+.B /settings
+Merge queue config, spam detection, stale PR management, label rules, config history.
+.TP
 .B /config
-Configuration editor (admin).
+Raw TOML editor, system info, self-update (admin).
+.SH BOT COMMANDS
+All four bot platforms (Telegram, Feishu, Discord, Slack) support the same command structure:
+.TP
+.B User Management (admin only)
+adduser <username> <password> <role> [groups]
+.br
+deluser <username>
+.br
+listusers
+.TP
+.B API Key Management (admin only)
+apikey new <name> <role>
+.br
+apikey list
+.br
+apikey revoke <key_id>
+.TP
+.B PR Operations
+prs [group] — List PRs
+.br
+pr <group> <id> — Show PR details
+.br
+approve <group> <id> — Approve PR
+.br
+close <group> <id> — Close PR
+.br
+reopen <group> <id> — Reopen PR
+.br
+spam <group> <id> — Mark as spam
+.TP
+.B Queue Operations
+queue [group] — Show merge queue
+.br
+recheck — Trigger queue recheck
+.br
+queue_clear — Clear queue
+.TP
+.B System
+stats — DORA metrics
+.br
+usage — CPU/memory usage
+.br
+config — Show config summary
+.br
+version — Show version info
+.br
+help — Show all commands
 .SH INSTALLATION
 Install the binary and setup systemd service:
 .TP
@@ -230,3 +462,5 @@ Asika Project.
 BSD 3-Clause License.
 .SH HISTORY
 2026-05-04: Initial documentation.
+.br
+2026-05-09: Added API key management, bot UID permissions, updated API endpoints.
